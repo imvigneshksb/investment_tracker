@@ -1,0 +1,18 @@
+{
+  "users": {
+    "admin@mail.com": {
+      "fullName": "Admin",
+      "email": "admin@mail.com",
+      "password": "Admin@1234s"
+    }
+  },
+  "sessions": {
+    "currentUser": {
+      "name": "Admin",
+      "email": "admin@mail.com",
+      "currentPage": "dashboard"
+    },
+    "isLoggedIn": true,
+    "currentPage": "dashboard"
+  }
+}
