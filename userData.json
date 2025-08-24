@@ -22,7 +22,16 @@
             "purchasePrice": 12
           }
         ],
-        "mutualFunds": []
+        "mutualFunds": [
+          {
+            "scheme": "oisdf",
+            "units": 55,
+            "purchaseNAV": 55,
+            "investmentAmount": 55,
+            "purchaseDate": "2025-08-24",
+            "dateAdded": "2025-08-24T15:33:32.188Z"
+          }
+        ]
       }
     }
   },

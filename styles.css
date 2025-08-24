@@ -298,32 +298,31 @@
 
 /* Secondary Button Hover State */
 .btn-secondary:hover {
-  /* background-color: var(--input-border); */
-  border-color: var(--text-color-light);
-  box-shadow: var(--shadow-medium);
+  background-color: transparent;
+  color: var(--button-bg);
+  border-color: var(--button-bg);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 /* Secondary Button Focus State */
 .btn-secondary:focus,
 .btn-secondary:focus-visible {
-  /* background-color: var(--input-border); */
+  background-color: transparent;
+  color: var(--button-bg);
   border-color: var(--button-bg);
-  color: var(--text-color);
-  outline: var(--focus-outline);
-  outline-offset: var(--focus-outline-offset);
-  box-shadow: var(--focus-shadow);
+  outline: none;
+  box-shadow: var(--focus-shadow) !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 /* Secondary Button Active State */
 .btn-secondary:active {
-  /* background-color: var(--text-color-light); */
-  border-color: var(--text-color);
+  border-color: var(--button-bg);
   box-shadow: var(--shadow-light);
 }
 
 /* Secondary Button Disabled State */
-.btn-secondary:disabled,
-.btn-secondary.disabled {
+.btn-secondary:disabled {
   background-color: transparent;
   color: var(--text-color-muted);
   border-color: var(--text-color-muted);
@@ -1458,8 +1457,6 @@ input.input-field {
   font-size: 16px;
   font-weight: var(--weight-semibold);
   text-align: center;
-  transition: background-color 0.2s ease, border-color 0.2s ease,
-    color 0.2s ease;
 }
 
 .action-btn:hover {
@@ -1521,8 +1518,6 @@ input.input-field {
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 14px;
   font-weight: var(--weight-medium);
-  transition: background-color 0.2s ease, border-color 0.2s ease,
-    color 0.2s ease;
 }
 
 .time-btn:hover,
