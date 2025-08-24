@@ -8,6 +8,7 @@
 8. Remember i am planning to host this website in zoho catalyst free tier
 9. Land on Porfolio dashboard if user is logged in
 10. Land on Login page if user is not logged in
+11. App should be responsive and user-friendly in all devices
 
 <!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
 
