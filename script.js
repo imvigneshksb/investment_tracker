@@ -3139,17 +3139,9 @@ function showAddStockModal() {
               </button>
               <div class="stock-exchange-dropdown" id="stockExchangeDropdownMenu" style="display: none">
                 <div class="stock-exchange-menu-item" onclick="selectStockExchangeOption('NSE')" tabindex="-1" role="option">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"></path>
-                  </svg>
                   NSE
                 </div>
                 <div class="stock-exchange-menu-item" onclick="selectStockExchangeOption('BSE')" tabindex="-1" role="option">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"></path>
-                  </svg>
                   BSE
                 </div>
               </div>
@@ -3159,23 +3151,23 @@ function showAddStockModal() {
           
           <div class="form-group">
             <label for="stockSymbol">Stock Symbol</label>
-            <input type="text" id="stockSymbol" required placeholder="Search for stocks..." class="search-input">
+            <input type="text" id="stockSymbol" required placeholder="Search for stocks..." class="input-field">
           </div>
           
           <div class="form-row">
             <div class="form-group">
               <label for="stockQuantity">Quantity</label>
-              <input type="number" id="stockQuantity" required min="1" placeholder="0" class="form-input">
+              <input type="number" id="stockQuantity" required min="1" placeholder="0" class="input-field">
             </div>
             <div class="form-group">
               <label for="stockPurchasePrice">Purchase Price</label>
-              <input type="number" id="stockPurchasePrice" required min="0" step="0.01" placeholder="0.00" class="form-input">
+              <input type="number" id="stockPurchasePrice" required min="0" step="0.01" placeholder="0.00" class="input-field">
             </div>
           </div>
           
           <div class="form-group">
             <label for="stockPurchaseDate">Purchase Date</label>
-            <input type="date" id="stockPurchaseDate" required class="form-input" value="${
+            <input type="date" id="stockPurchaseDate" required class="input-field" value="${
               new Date().toISOString().split("T")[0]
             }">
           </div>
@@ -3254,28 +3246,28 @@ function showAddMutualFundModal() {
         <form id="mutualFundForm" onsubmit="addMutualFund(event)">
           <div class="form-group">
             <label for="fundScheme">Mutual Fund Scheme</label>
-            <input type="text" id="fundScheme" required placeholder="Search for mutual funds..." class="search-input">
+            <input type="text" id="fundScheme" required placeholder="Search for mutual funds..." class="input-field">
           </div>
           
           <div class="form-row">
             <div class="form-group">
               <label for="fundUnits">Units</label>
-              <input type="number" id="fundUnits" required min="0" step="0.001" placeholder="0.000" class="form-input">
+              <input type="number" id="fundUnits" required min="0" step="0.001" placeholder="0.000" class="input-field">
             </div>
             <div class="form-group">
               <label for="fundPurchaseNAV">Purchase NAV</label>
-              <input type="number" id="fundPurchaseNAV" required min="0" step="0.01" placeholder="0.00" class="form-input">
+              <input type="number" id="fundPurchaseNAV" required min="0" step="0.01" placeholder="0.00" class="input-field">
             </div>
           </div>
           
           <div class="form-group">
             <label for="fundInvestmentAmount">Investment Amount</label>
-            <input type="number" id="fundInvestmentAmount" required min="0" step="0.01" placeholder="0.00" class="form-input">
+            <input type="number" id="fundInvestmentAmount" required min="0" step="0.01" placeholder="0.00" class="input-field">
           </div>
           
           <div class="form-group">
             <label for="fundPurchaseDate">Purchase Date</label>
-            <input type="date" id="fundPurchaseDate" required class="form-input" value="${
+            <input type="date" id="fundPurchaseDate" required class="input-field" value="${
               new Date().toISOString().split("T")[0]
             }">
           </div>

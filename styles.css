@@ -142,8 +142,8 @@
   user-select: none;
 
   /* Transitions - Only for colors and shadows, no transform */
-  transition: background-color var(--transition-fast),
-    box-shadow var(--transition-fast), border-color var(--transition-fast);
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
 
   /* States */
   position: relative;
@@ -154,6 +154,8 @@
 .btn-primary:hover {
   background-color: var(--button-hover);
   box-shadow: var(--shadow-medium);
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 /* Primary Button Focus State */
@@ -287,9 +289,8 @@
   user-select: none;
 
   /* Transitions - Only for colors and shadows, no transform */
-  transition: background-color var(--transition-fast),
-    box-shadow var(--transition-fast), border-color var(--transition-fast),
-    color var(--transition-fast);
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
 
   /* States */
   position: relative;
@@ -301,7 +302,8 @@
   background-color: transparent;
   color: var(--button-bg);
   border-color: var(--button-bg);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 /* Secondary Button Focus State */
@@ -312,7 +314,8 @@
   border-color: var(--button-bg);
   outline: none;
   box-shadow: var(--focus-shadow) !important;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 /* Secondary Button Active State */
@@ -2138,23 +2141,7 @@ body.modal-open {
   font-size: var(--font-md);
 }
 
-.form-group input {
-  width: 100%;
-  padding: var(--spacing-md);
-  border: var(--border-thin) var(--input-border);
-  border-radius: var(--radius-md);
-  font-size: var(--font-md);
-  font-family: inherit;
-  background: var(--input-bg);
-  color: var(--text-color);
-  transition: all var(--transition-fast);
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: var(--button-bg);
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-}
+/* Removed generic form-group input styles to let input-field class take precedence */
 
 .form-row {
   display: grid;
