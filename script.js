@@ -2031,7 +2031,7 @@ function loadUserPortfolio(userEmail) {
       transactions: [],
       holdings: [],
       stocks: [],
-      mutualFunds: []
+      mutualFunds: [],
     };
   }
 
@@ -2045,11 +2045,13 @@ function loadUserPortfolio(userEmail) {
   }
   if (dailyChangeEl) {
     dailyChangeEl.textContent = `$${user.portfolio.dailyChange.toFixed(2)}`;
-    dailyChangeEl.className = user.portfolio.dailyChange >= 0 ? "value positive" : "value negative";
+    dailyChangeEl.className =
+      user.portfolio.dailyChange >= 0 ? "value positive" : "value negative";
   }
   if (totalGainEl) {
     totalGainEl.textContent = `${user.portfolio.totalGain.toFixed(1)}%`;
-    totalGainEl.className = user.portfolio.totalGain >= 0 ? "value positive" : "value negative";
+    totalGainEl.className =
+      user.portfolio.totalGain >= 0 ? "value positive" : "value negative";
   }
 
   // Update transactions
@@ -2057,7 +2059,7 @@ function loadUserPortfolio(userEmail) {
 
   // Update holdings
   loadHoldings(user.portfolio.holdings);
-  
+
   // Load stocks and mutual funds tables
   loadStocksTable(user.portfolio.stocks || []);
   loadMutualFundsTable(user.portfolio.mutualFunds || []);
@@ -2114,7 +2116,7 @@ function loadHoldings(holdings) {
 // Load stocks table with grid layout
 function loadStocksTable(stocks) {
   const tableBody = document.getElementById("stocksTableBody");
-  
+
   if (!stocks || stocks.length === 0) {
     tableBody.innerHTML = `
       <div class="no-holdings">
@@ -2178,7 +2180,7 @@ function loadStocksTable(stocks) {
 // Load mutual funds table with grid layout
 function loadMutualFundsTable(mutualFunds) {
   const tableBody = document.getElementById("mutualFundsTableBody");
-  
+
   if (!mutualFunds || mutualFunds.length === 0) {
     tableBody.innerHTML = `
       <div class="no-holdings">
@@ -2240,9 +2242,9 @@ function loadMutualFundsTable(mutualFunds) {
 // Modal functions for adding investments
 function showAddStockModal() {
   // Create and show modal - you can customize this based on your modal implementation
-  const modal = document.createElement('div');
-  modal.className = 'modal';
-  modal.id = 'addStockModal';
+  const modal = document.createElement("div");
+  modal.className = "modal";
+  modal.id = "addStockModal";
   modal.innerHTML = `
     <div class="modal-content">
       <div class="modal-header">
@@ -2280,20 +2282,20 @@ function showAddStockModal() {
     </div>
   `;
   document.body.appendChild(modal);
-  modal.style.display = 'block';
+  modal.style.display = "block";
 }
 
 function hideAddStockModal() {
-  const modal = document.getElementById('addStockModal');
+  const modal = document.getElementById("addStockModal");
   if (modal) {
     modal.remove();
   }
 }
 
 function showAddMutualFundModal() {
-  const modal = document.createElement('div');
-  modal.className = 'modal';
-  modal.id = 'addMutualFundModal';
+  const modal = document.createElement("div");
+  modal.className = "modal";
+  modal.id = "addMutualFundModal";
   modal.innerHTML = `
     <div class="modal-content">
       <div class="modal-header">
@@ -2331,11 +2333,11 @@ function showAddMutualFundModal() {
     </div>
   `;
   document.body.appendChild(modal);
-  modal.style.display = 'block';
+  modal.style.display = "block";
 }
 
 function hideAddMutualFundModal() {
-  const modal = document.getElementById('addMutualFundModal');
+  const modal = document.getElementById("addMutualFundModal");
   if (modal) {
     modal.remove();
   }
@@ -2344,28 +2346,33 @@ function hideAddMutualFundModal() {
 // Add stock function
 async function addStock(event) {
   event.preventDefault();
-  
-  const symbol = document.getElementById('stockSymbol').value.trim().toUpperCase();
-  const company = document.getElementById('stockCompany').value.trim();
-  const quantity = parseInt(document.getElementById('stockQuantity').value);
-  const avgPrice = parseFloat(document.getElementById('stockAvgPrice').value);
-  const currentPrice = parseFloat(document.getElementById('stockCurrentPrice').value);
-  
+
+  const symbol = document
+    .getElementById("stockSymbol")
+    .value.trim()
+    .toUpperCase();
+  const company = document.getElementById("stockCompany").value.trim();
+  const quantity = parseInt(document.getElementById("stockQuantity").value);
+  const avgPrice = parseFloat(document.getElementById("stockAvgPrice").value);
+  const currentPrice = parseFloat(
+    document.getElementById("stockCurrentPrice").value
+  );
+
   if (!symbol || !company || !quantity || !avgPrice || !currentPrice) {
-    alert('Please fill all fields');
+    alert("Please fill all fields");
     return;
   }
-  
+
   const session = getCurrentSession();
   if (!session) {
-    alert('Please login first');
+    alert("Please login first");
     return;
   }
-  
+
   await loadUserData();
   const user = getUserData(session.email);
   if (!user) return;
-  
+
   // Initialize portfolio if needed
   if (!user.portfolio) {
     user.portfolio = { stocks: [], mutualFunds: [] };
@@ -2373,47 +2380,49 @@ async function addStock(event) {
   if (!user.portfolio.stocks) {
     user.portfolio.stocks = [];
   }
-  
+
   // Add stock
   user.portfolio.stocks.push({
     symbol,
     company,
     quantity,
     avgPrice,
-    currentPrice
+    currentPrice,
   });
-  
+
   await setUserData(session.email, user);
   hideAddStockModal();
   loadUserPortfolio(session.email);
-  alert('Stock added successfully!');
+  alert("Stock added successfully!");
 }
 
 // Add mutual fund function
 async function addMutualFund(event) {
   event.preventDefault();
-  
-  const scheme = document.getElementById('fundScheme').value.trim();
-  const fundName = document.getElementById('fundName').value.trim();
-  const units = parseFloat(document.getElementById('fundUnits').value);
-  const avgNAV = parseFloat(document.getElementById('fundAvgNAV').value);
-  const currentNAV = parseFloat(document.getElementById('fundCurrentNAV').value);
-  
+
+  const scheme = document.getElementById("fundScheme").value.trim();
+  const fundName = document.getElementById("fundName").value.trim();
+  const units = parseFloat(document.getElementById("fundUnits").value);
+  const avgNAV = parseFloat(document.getElementById("fundAvgNAV").value);
+  const currentNAV = parseFloat(
+    document.getElementById("fundCurrentNAV").value
+  );
+
   if (!scheme || !fundName || !units || !avgNAV || !currentNAV) {
-    alert('Please fill all fields');
+    alert("Please fill all fields");
     return;
   }
-  
+
   const session = getCurrentSession();
   if (!session) {
-    alert('Please login first');
+    alert("Please login first");
     return;
   }
-  
+
   await loadUserData();
   const user = getUserData(session.email);
   if (!user) return;
-  
+
   // Initialize portfolio if needed
   if (!user.portfolio) {
     user.portfolio = { stocks: [], mutualFunds: [] };
@@ -2421,20 +2430,20 @@ async function addMutualFund(event) {
   if (!user.portfolio.mutualFunds) {
     user.portfolio.mutualFunds = [];
   }
-  
+
   // Add mutual fund
   user.portfolio.mutualFunds.push({
     scheme,
     fundName,
     units,
     avgNAV,
-    currentNAV
+    currentNAV,
   });
-  
+
   await setUserData(session.email, user);
   hideAddMutualFundModal();
   loadUserPortfolio(session.email);
-  alert('Mutual fund added successfully!');
+  alert("Mutual fund added successfully!");
 }
 
 // Edit functions (placeholder)
@@ -2448,35 +2457,35 @@ function editMutualFund(index) {
 
 // Delete functions
 async function deleteStock(index) {
-  if (!confirm('Are you sure you want to delete this stock?')) return;
-  
+  if (!confirm("Are you sure you want to delete this stock?")) return;
+
   const session = getCurrentSession();
   if (!session) return;
-  
+
   await loadUserData();
   const user = getUserData(session.email);
   if (!user || !user.portfolio || !user.portfolio.stocks) return;
-  
+
   user.portfolio.stocks.splice(index, 1);
   await setUserData(session.email, user);
   loadUserPortfolio(session.email);
-  alert('Stock deleted successfully!');
+  alert("Stock deleted successfully!");
 }
 
 async function deleteMutualFund(index) {
-  if (!confirm('Are you sure you want to delete this mutual fund?')) return;
-  
+  if (!confirm("Are you sure you want to delete this mutual fund?")) return;
+
   const session = getCurrentSession();
   if (!session) return;
-  
+
   await loadUserData();
   const user = getUserData(session.email);
   if (!user || !user.portfolio || !user.portfolio.mutualFunds) return;
-  
+
   user.portfolio.mutualFunds.splice(index, 1);
   await setUserData(session.email, user);
   loadUserPortfolio(session.email);
-  alert('Mutual fund deleted successfully!');
+  alert("Mutual fund deleted successfully!");
 }
 
 // Initialize when page loads
