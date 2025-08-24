@@ -20,6 +20,7 @@
   --input-border: #e0e0e0;
   --button-bg: #007bff;
   --button-hover: #0056b3;
+  --button-text: #ffffff;
   --card-bg: #ffffff;
   --success-color: #28a745;
   --success-hover: #218838;
@@ -83,6 +84,9 @@
   --font-title-md: 24px;
   --font-title-lg: 28px;
   --font-display: 32px;
+
+  /* Font family */
+  --font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   /* Font weights - Optimized for Poppins */
   --weight-light: 300;
@@ -324,7 +328,7 @@ textarea,
 .cancel-btn:focus {
   background-color: var(--button-hover);
   border-color: var(--button-hover);
-  color: white;
+  color: var(--button-text);
   outline: var(--focus-outline);
   outline-offset: var(--focus-outline-offset);
   box-shadow: var(--focus-shadow);
@@ -349,7 +353,7 @@ textarea,
   height: var(--spacing-massive);
   border-radius: var(--radius-full);
   background-color: var(--button-bg);
-  color: white;
+  color: var(--button-text);
   display: none; /* Initially hidden, shown via JavaScript when logged in */
   align-items: center;
   justify-content: center;
@@ -455,13 +459,13 @@ textarea,
 .details-menu-item:hover,
 .details-menu-item:focus {
   background-color: var(--button-bg);
-  color: #fff;
+  color: var(--button-text);
   outline: none;
 }
 
 .details-menu-item.selected {
   background-color: var(--button-bg);
-  color: #fff;
+  color: var(--button-text);
 }
 
 .details-menu-item svg {
@@ -653,7 +657,7 @@ input.input-field {
   width: 100%;
   padding: 16px;
   background-color: var(--button-bg);
-  color: white;
+  color: var(--button-text);
   border: none;
   border-radius: 18px;
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -689,7 +693,7 @@ input.input-field {
   width: 100%;
   padding: 14px;
   background-color: var(--button-bg);
-  color: white;
+  color: var(--button-text);
   border: none;
   border-radius: 18px;
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -776,14 +780,14 @@ input.input-field {
 }
 
 .signup-link a:hover {
-  color: white;
+  color: var(--button-text);
   background: linear-gradient(135deg, var(--button-bg), var(--button-hover));
   border-color: var(--button-bg);
 }
 
 .signup-link a:focus,
 .login-link a:focus {
-  color: white;
+  color: var(--button-text);
   background: linear-gradient(135deg, var(--button-bg), var(--button-hover));
   border-color: var(--button-bg);
   outline: var(--focus-outline);
@@ -826,7 +830,7 @@ input.input-field {
 }
 
 .login-link a:hover {
-  color: white;
+  color: var(--button-text);
   background: linear-gradient(135deg, var(--button-bg), var(--button-hover));
   border-color: var(--button-bg);
 }
@@ -1061,13 +1065,13 @@ input.input-field {
 .stock-exchange-menu-item:hover,
 .stock-exchange-menu-item:focus {
   background-color: var(--button-bg);
-  color: #fff;
+  color: var(--button-text);
   outline: none;
 }
 
 .stock-exchange-menu-item.selected {
   background-color: var(--button-bg);
-  color: #fff;
+  color: var(--button-text);
 }
 
 .stock-exchange-menu-item svg {
@@ -1128,7 +1132,7 @@ input.input-field {
 
 .edit-field-buttons .update-btn {
   background-color: var(--button-bg) !important;
-  color: white !important;
+  color: var(--button-text) !important;
   border: 2px solid var(--button-bg) !important;
 }
 
@@ -1190,7 +1194,7 @@ input.input-field {
   flex: 1;
   padding: 14px;
   background-color: var(--button-bg);
-  color: white;
+  color: var(--button-text);
   border: none;
   border-radius: 18px;
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -1209,7 +1213,7 @@ input.input-field {
   flex: 1;
   padding: 14px;
   background-color: var(--button-bg);
-  color: white;
+  color: var(--button-text);
   border: 2px solid var(--button-bg);
   border-radius: 18px;
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -1232,7 +1236,7 @@ input.input-field {
   width: 100%;
   padding: 16px;
   background-color: var(--button-bg);
-  color: white;
+  color: var(--button-text);
   border: none;
   border-radius: 18px;
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -1257,7 +1261,7 @@ input.input-field {
 /* Logout Button */
 .logout-btn {
   background-color: var(--danger-color);
-  color: white;
+  color: var(--button-text);
   border: none;
   border-radius: 12px;
   padding: 10px 18px;
@@ -1299,13 +1303,13 @@ input.input-field {
 .action-btn:hover {
   border-color: var(--button-bg);
   background-color: var(--button-bg);
-  color: white;
+  color: var(--button-text);
 }
 
 .action-btn:focus,
 .time-btn:focus {
   background-color: var(--button-bg);
-  color: white;
+  color: var(--button-text);
   border-color: var(--button-bg);
   outline: var(--focus-outline);
   outline-offset: var(--focus-outline-offset);
@@ -1362,7 +1366,7 @@ input.input-field {
 .time-btn:hover,
 .time-btn.active {
   background-color: var(--button-bg);
-  color: white;
+  color: var(--button-text);
   border-color: var(--button-bg);
 }
 
@@ -1563,7 +1567,7 @@ input.input-field {
   gap: var(--spacing-sm);
   padding: var(--spacing-md) var(--spacing-xl);
   background: var(--button-bg);
-  color: white;
+  color: var(--button-text);
   border: none;
   border-radius: var(--radius-lg);
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -1622,7 +1626,7 @@ input.input-field {
   );
   font-weight: 600;
   font-size: 14px;
-  color: #ffffff;
+  color: var(--button-text);
   border-bottom: 1px solid var(--button-hover);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
@@ -1693,7 +1697,7 @@ input.input-field {
 }
 
 .holdings-header .holding-col {
-  color: #ffffff;
+  color: var(--button-text);
   font-weight: 600;
 }
 
@@ -1912,7 +1916,24 @@ input.input-field {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6); /* Slightly darker overlay */
+  backdrop-filter: blur(2px); /* Add subtle blur effect */
+}
+
+/* Prevent scrolling when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Style for content that's frozen behind modal */
+[inert] {
+  pointer-events: none;
+  user-select: none;
+}
+
+[aria-hidden="true"] {
+  opacity: 0.7;
+  filter: grayscale(20%);
 }
 
 .modal-content {
@@ -1924,7 +1945,9 @@ input.input-field {
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: hidden; /* Hide overflow on the container to preserve border radius */
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-header {
@@ -1935,6 +1958,7 @@ input.input-field {
   border-bottom: 1px solid var(--input-border);
   background: var(--container-bg);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  flex-shrink: 0; /* Prevent header from shrinking when content overflows */
 }
 
 .modal-header h3 {
@@ -1967,6 +1991,11 @@ input.input-field {
 
 .modal-body {
   padding: var(--spacing-xl);
+  overflow-y: auto; /* Handle scrolling in the body instead of the modal content */
+  flex: 1; /* Allow the body to grow and shrink as needed */
+  max-height: calc(
+    90vh - 80px
+  ); /* Reserve space for header, accounting for padding and borders */
 }
 
 .form-group {
@@ -2095,7 +2124,7 @@ input.input-field {
 
 .submit-btn {
   background: var(--button-bg);
-  color: white;
+  color: var(--button-text);
   border: none;
   padding: var(--spacing-md) var(--spacing-xl);
   border-radius: var(--radius-md);
@@ -2118,6 +2147,15 @@ input.input-field {
   padding-top: var(--spacing-lg);
   border-top: 1px solid var(--input-border);
   align-items: center;
+  flex-shrink: 0; /* Prevent footer from shrinking when content overflows */
+  background: var(--container-bg);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl); /* Ensure bottom border radius */
+  margin-left: calc(-1 * var(--spacing-xl)); /* Offset parent padding */
+  margin-right: calc(-1 * var(--spacing-xl)); /* Offset parent padding */
+  margin-bottom: calc(-1 * var(--spacing-xl)); /* Offset parent padding */
+  padding-left: var(--spacing-xl);
+  padding-right: var(--spacing-xl);
+  padding-bottom: var(--spacing-xl);
 }
 
 .form-actions button {
@@ -2136,7 +2174,7 @@ input.input-field {
 
 .form-actions .submit-btn {
   background: var(--button-bg);
-  color: white;
+  color: var(--button-text);
   border: none;
   order: 2;
 }

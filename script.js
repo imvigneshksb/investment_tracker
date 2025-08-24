@@ -1407,6 +1407,106 @@ function updateVisualSelection() {
   }
 }
 
+// Setup focus trap for modal dialogs
+function setupModalFocusTrap(modal) {
+  const focusableElements = modal.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  const firstFocusableElement = focusableElements[0];
+  const lastFocusableElement = focusableElements[focusableElements.length - 1];
+
+  // Handle Tab key to trap focus within modal
+  modal.addEventListener("keydown", function (e) {
+    if (e.key === "Tab") {
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === firstFocusableElement) {
+          lastFocusableElement.focus();
+          e.preventDefault();
+        }
+      } else {
+        // Tab
+        if (document.activeElement === lastFocusableElement) {
+          firstFocusableElement.focus();
+          e.preventDefault();
+        }
+      }
+    }
+
+    // Handle Escape key to close modal
+    if (e.key === "Escape") {
+      const modalId = modal.id;
+      if (modalId === "addStockModal") {
+        hideAddStockModal();
+      } else if (modalId === "addMutualFundModal") {
+        hideAddMutualFundModal();
+      }
+    }
+  });
+
+  // Handle clicks on modal backdrop to close modal
+  modal.addEventListener("click", function (e) {
+    if (e.target === modal) {
+      const modalId = modal.id;
+      if (modalId === "addStockModal") {
+        hideAddStockModal();
+      } else if (modalId === "addMutualFundModal") {
+        hideAddMutualFundModal();
+      }
+    }
+  });
+}
+
+// Freeze main window when modal is open
+function freezeMainWindow() {
+  const mainContent =
+    document.querySelector("main") ||
+    document.querySelector(".single-column-container") ||
+    document.body;
+  const header = document.querySelector(".main-header");
+
+  // Prevent body scrolling and add modal-open class
+  document.body.style.overflow = "hidden";
+  document.body.classList.add("modal-open");
+
+  // Make main content non-interactive and hidden from screen readers
+  if (mainContent && mainContent !== document.body) {
+    mainContent.setAttribute("aria-hidden", "true");
+    mainContent.setAttribute("inert", "");
+  }
+
+  // Also make header non-interactive
+  if (header) {
+    header.setAttribute("aria-hidden", "true");
+    header.setAttribute("inert", "");
+  }
+}
+
+// Unfreeze main window when modal is closed
+function unfreezeMainWindow() {
+  const mainContent =
+    document.querySelector("main") ||
+    document.querySelector(".single-column-container") ||
+    document.body;
+  const header = document.querySelector(".main-header");
+
+  // Restore body scrolling and remove modal-open class
+  document.body.style.overflow = "";
+  document.body.classList.remove("modal-open");
+
+  // Make main content interactive and accessible to screen readers again
+  if (mainContent && mainContent !== document.body) {
+    mainContent.removeAttribute("aria-hidden");
+    mainContent.removeAttribute("inert");
+  }
+
+  // Also make header interactive again
+  if (header) {
+    header.removeAttribute("aria-hidden");
+    header.removeAttribute("inert");
+  }
+}
+
 // Save field edit
 async function saveFieldEdit() {
   const container = document.getElementById("editFieldContainer");
@@ -2892,16 +2992,21 @@ function loadMutualFundsTable(mutualFunds) {
 }
 
 // Modal functions for adding investments
+let modalTriggerElement = null; // Store the element that opened the modal
+
 function showAddStockModal() {
+  // Store the element that triggered the modal for focus restoration
+  modalTriggerElement = document.activeElement;
+
   // Create and show modal with enhanced design
   const modal = document.createElement("div");
   modal.className = "modal";
   modal.id = "addStockModal";
   modal.innerHTML = `
-    <div class="modal-content">
+    <div class="modal-content" role="dialog" aria-labelledby="stockModalTitle" aria-modal="true">
       <div class="modal-header">
-        <h3>Add Stock</h3>
-        <span class="close" onclick="hideAddStockModal()">&times;</span>
+        <h3 id="stockModalTitle">Add Stock</h3>
+        <span class="close" onclick="hideAddStockModal()" aria-label="Close modal">&times;</span>
       </div>
       <div class="modal-body">
         <form id="stockForm" onsubmit="addStock(event)">
@@ -2968,9 +3073,25 @@ function showAddStockModal() {
   document.body.appendChild(modal);
   modal.style.display = "block";
 
-  // Set focus to the first input
+  // Freeze the main window
+  freezeMainWindow();
+
+  // Setup keyboard accessibility for stock exchange dropdown
+  setupStockExchangeDropdownAccessibility();
+
+  // Set focus to the modal and first focusable element
   setTimeout(() => {
-    document.getElementById("stockExchange").focus();
+    const modalContent = modal.querySelector(".modal-content");
+
+    // Set modal as focus trap and focus on modal content
+    modalContent.setAttribute("tabindex", "-1");
+    modalContent.focus();
+
+    // Don't automatically focus on dropdown button - let user navigate manually
+    // All keyboard and mouse functionality remains intact
+
+    // Setup modal focus trap
+    setupModalFocusTrap(modal);
   }, 100);
 }
 
@@ -2978,18 +3099,35 @@ function hideAddStockModal() {
   const modal = document.getElementById("addStockModal");
   if (modal) {
     modal.remove();
+
+    // Unfreeze the main window
+    unfreezeMainWindow();
+
+    // Restore focus to the element that opened the modal, then blur after a short delay
+    if (modalTriggerElement) {
+      modalTriggerElement.focus();
+
+      // Remove focus outline after a short delay to prevent persistent focus styles
+      setTimeout(() => {
+        modalTriggerElement.blur();
+        modalTriggerElement = null;
+      }, 100);
+    }
   }
 }
 
 function showAddMutualFundModal() {
+  // Store the element that triggered the modal for focus restoration
+  modalTriggerElement = document.activeElement;
+
   const modal = document.createElement("div");
   modal.className = "modal";
   modal.id = "addMutualFundModal";
   modal.innerHTML = `
-    <div class="modal-content">
+    <div class="modal-content" role="dialog" aria-labelledby="mutualFundModalTitle" aria-modal="true">
       <div class="modal-header">
-        <h3>Add Mutual Fund</h3>
-        <span class="close" onclick="hideAddMutualFundModal()">&times;</span>
+        <h3 id="mutualFundModalTitle">Add Mutual Fund</h3>
+        <span class="close" onclick="hideAddMutualFundModal()" aria-label="Close modal">&times;</span>
       </div>
       <div class="modal-body">
         <form id="mutualFundForm" onsubmit="addMutualFund(event)">
@@ -3032,9 +3170,22 @@ function showAddMutualFundModal() {
   document.body.appendChild(modal);
   modal.style.display = "block";
 
-  // Set focus to the first input
+  // Freeze the main window
+  freezeMainWindow();
+
+  // Set focus to the modal and first focusable element
   setTimeout(() => {
-    document.getElementById("fundScheme").focus();
+    const modalContent = modal.querySelector(".modal-content");
+
+    // Set modal as focus trap and focus on modal content
+    modalContent.setAttribute("tabindex", "-1");
+    modalContent.focus();
+
+    // Don't automatically focus on input field - let user navigate manually
+    // All keyboard and mouse functionality remains intact
+
+    // Setup modal focus trap
+    setupModalFocusTrap(modal);
   }, 100);
 }
 
@@ -3042,6 +3193,20 @@ function hideAddMutualFundModal() {
   const modal = document.getElementById("addMutualFundModal");
   if (modal) {
     modal.remove();
+
+    // Unfreeze the main window
+    unfreezeMainWindow();
+
+    // Restore focus to the element that opened the modal, then blur after a short delay
+    if (modalTriggerElement) {
+      modalTriggerElement.focus();
+
+      // Remove focus outline after a short delay to prevent persistent focus styles
+      setTimeout(() => {
+        modalTriggerElement.blur();
+        modalTriggerElement = null;
+      }, 100);
+    }
   }
 }
 
