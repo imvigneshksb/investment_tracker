@@ -1,11 +1,10 @@
 # Investment Tracker
 
-A modern, responsive HTML-based investment tracking website with a clean interface and dark mode support. **Now ready for Zoho Catalyst deployment!**
+A modern, responsive HTML-based investment tracking website with a clean interface. **Now ready for Zoho Catalyst deployment!**
 
 ## 🌟 Features
 
 - **Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
-- **Dark/Light Theme**: Toggle between themes with persistence using localStorage
 - **Smooth Animations**: All interactions include smooth transitions and hover effects
 - **Interactive Chart**: Canvas-based investment growth visualization with time period controls
 - **Modern UI**: Clean interface with rounded corners and smooth gradients
@@ -135,7 +134,7 @@ A modern, responsive HTML-based investment tracking website with a clean interfa
 ```
 investment_tracker/
 ├── index.html              # Main HTML file
-├── styles.css              # CSS styles with theme support
+├── styles.css              # CSS styles
 ├── script.js               # JavaScript functionality
 ├── app.js                  # Express server for Zoho Catalyst
 ├── server.js               # Legacy Node.js local server
@@ -185,15 +184,9 @@ curl https://your-app.catalyst.zoho.com/api/market
 2. **Choose a hosting method** from the options above
 3. **Start the server** using your preferred method
 4. **Open your browser** and navigate to `http://localhost:8080`
-5. **Enjoy!** The website will load with the light theme by default
+5. **Enjoy!** The website will load with a clean interface
 
 ## 🎨 Usage
-
-### Theme System
-
-- Click the **"Dark"** button to switch to dark mode
-- Click **"Light"** to switch back to light mode
-- Theme preference is automatically saved and restored
 
 ### Interactive Elements
 
@@ -222,7 +215,7 @@ curl https://your-app.catalyst.zoho.com/api/market
 
 You can easily customize:
 
-- Colors by modifying CSS custom properties in `:root` and `[data-theme="dark"]`
+- Colors by modifying CSS custom properties in `:root`
 - Chart data by updating the `dataPoints` array in `script.js`
 - Layout by adjusting the CSS grid and flexbox properties
 

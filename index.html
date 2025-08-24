@@ -419,111 +419,344 @@
           <h2 class="section-title">Portfolio Summary</h2>
           <div class="summary-cards">
             <div class="data-card">
-              <h3>Portfolio Value</h3>
-              <p class="value">$125,430</p>
+              <h3>Total Investment</h3>
+              <p class="value" id="totalInvestment">₹0</p>
             </div>
-
             <div class="data-card">
-              <h3>Daily Change</h3>
-              <p class="value positive">+$2,340</p>
+              <h3>Current Value</h3>
+              <p class="value" id="currentValue">₹0</p>
             </div>
-
             <div class="data-card">
-              <h3>Total Gain</h3>
-              <p class="value positive">+18.7%</p>
+              <h3>Total Gain/Loss</h3>
+              <p class="value neutral" id="totalGainLoss">₹0</p>
+            </div>
+            <div class="data-card">
+              <h3>Return %</h3>
+              <p class="value neutral" id="returnPercentage">0%</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Holdings Section -->
+        <section class="holdings-section">
+          <h2 class="section-title">Holdings</h2>
+
+          <!-- Stocks Holdings -->
+          <div class="holdings-category">
+            <div class="category-header">
+              <h3 class="category-title">Stocks</h3>
+              <button class="add-category-btn" onclick="showAddStockModal()">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Stock
+              </button>
+            </div>
+            <div class="holdings-container">
+              <div class="holdings-table">
+                <div class="holdings-header">
+                  <div class="holding-col">Symbol</div>
+                  <div class="holding-col">Company</div>
+                  <div class="holding-col">Qty</div>
+                  <div class="holding-col">Avg Price</div>
+                  <div class="holding-col">Current Price</div>
+                  <div class="holding-col">Investment</div>
+                  <div class="holding-col">Current Value</div>
+                  <div class="holding-col">Gain/Loss</div>
+                  <div class="holding-col">Return %</div>
+                  <div class="holding-col">Actions</div>
+                </div>
+                <div class="holdings-body" id="stocksTableBody">
+                  <div class="no-holdings">
+                    <p>No stocks in portfolio</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mutual Funds Holdings -->
+          <div class="holdings-category">
+            <div class="category-header">
+              <h3 class="category-title">Mutual Funds</h3>
+              <button
+                class="add-category-btn"
+                onclick="showAddMutualFundModal()"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Mutual Fund
+              </button>
+            </div>
+            <div class="holdings-container">
+              <div class="holdings-table">
+                <div class="holdings-header">
+                  <div class="holding-col">Scheme</div>
+                  <div class="holding-col">Fund Name</div>
+                  <div class="holding-col">Units</div>
+                  <div class="holding-col">Avg NAV</div>
+                  <div class="holding-col">Current NAV</div>
+                  <div class="holding-col">Investment</div>
+                  <div class="holding-col">Current Value</div>
+                  <div class="holding-col">Gain/Loss</div>
+                  <div class="holding-col">Return %</div>
+                  <div class="holding-col">Actions</div>
+                </div>
+                <div class="holdings-body" id="mutualFundsTableBody">
+                  <div class="no-holdings">
+                    <p>No mutual funds in portfolio</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
         <!-- Chart Section -->
-        <!-- Chart Section -->
         <section class="chart-section">
           <div class="chart-header">
-            <h2 class="section-title">Investment Performance</h2>
+            <h2 class="section-title">Portfolio Performance</h2>
             <div class="chart-controls">
-              <button class="time-btn active">1W</button>
-              <button class="time-btn">1M</button>
-              <button class="time-btn">3M</button>
-              <button class="time-btn">1Y</button>
-              <button class="time-btn">ALL</button>
+              <button class="time-btn active" onclick="updateChartPeriod('1W')">
+                1W
+              </button>
+              <button class="time-btn" onclick="updateChartPeriod('1M')">
+                1M
+              </button>
+              <button class="time-btn" onclick="updateChartPeriod('3M')">
+                3M
+              </button>
+              <button class="time-btn" onclick="updateChartPeriod('1Y')">
+                1Y
+              </button>
+              <button class="time-btn" onclick="updateChartPeriod('ALL')">
+                ALL
+              </button>
             </div>
           </div>
           <div class="chart-container">
             <canvas id="investmentChart"></canvas>
           </div>
         </section>
-
-        <!-- Recent Transactions Section -->
-        <section class="transactions-section">
-          <h2 class="section-title">Recent Transactions</h2>
-          <div class="dashboard-card">
-            <div class="transaction-list">
-              <div class="transaction-item">
-                <span class="stock">AAPL</span>
-                <span class="action buy">BUY</span>
-                <span class="amount">$1,250</span>
-              </div>
-              <div class="transaction-item">
-                <span class="stock">TSLA</span>
-                <span class="action sell">SELL</span>
-                <span class="amount">$850</span>
-              </div>
-              <div class="transaction-item">
-                <span class="stock">MSFT</span>
-                <span class="action buy">BUY</span>
-                <span class="amount">$2,100</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Top Holdings Section -->
-        <section class="holdings-section">
-          <h2 class="section-title">Top Holdings</h2>
-          <div class="dashboard-card">
-            <div class="holdings-list">
-              <div class="holding-item">
-                <span class="symbol">AAPL</span>
-                <span class="percentage">32.5%</span>
-              </div>
-              <div class="holding-item">
-                <span class="symbol">MSFT</span>
-                <span class="percentage">28.3%</span>
-              </div>
-              <div class="holding-item">
-                <span class="symbol">TSLA</span>
-                <span class="percentage">15.2%</span>
-              </div>
-              <div class="holding-item">
-                <span class="symbol">NVDA</span>
-                <span class="percentage">12.8%</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Market Summary Section -->
-        <section class="market-section">
-          <h2 class="section-title">Market Summary</h2>
-          <div class="dashboard-card">
-            <div class="market-stats">
-              <div class="stat-item">
-                <span class="label">S&P 500</span>
-                <span class="value positive">+1.2%</span>
-              </div>
-              <div class="stat-item">
-                <span class="label">NASDAQ</span>
-                <span class="value positive">+0.8%</span>
-              </div>
-              <div class="stat-item">
-                <span class="label">DOW</span>
-                <span class="value negative">-0.3%</span>
-              </div>
-            </div>
-          </div>
-        </section>
       </div>
       <!-- End Dashboard Content -->
+
+      <!-- Add Stock Modal -->
+      <div id="addStockModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Add Stock</h3>
+            <span class="close" onclick="hideAddStockModal()">&times;</span>
+          </div>
+          <div class="modal-body">
+            <div id="stockForm" class="investment-form">
+              <div class="form-group">
+                <label for="stockSymbol">Stock Symbol</label>
+                <div class="search-input-container">
+                  <input
+                    type="text"
+                    id="stockSymbol"
+                    placeholder="Search for stocks..."
+                    autocomplete="off"
+                  />
+                  <div class="search-suggestions" id="stockSuggestions"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="stockExchange">Exchange</label>
+                <select id="stockExchange">
+                  <option value="NSE">NSE</option>
+                  <option value="BSE">BSE</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="stockQuantity">Quantity</label>
+                  <input
+                    type="number"
+                    id="stockQuantity"
+                    placeholder="0"
+                    min="0"
+                    step="1"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="stockPrice">Purchase Price</label>
+                  <input
+                    type="number"
+                    id="stockPrice"
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="stockDate">Purchase Date</label>
+                <input type="date" id="stockDate" />
+              </div>
+              <div class="form-actions">
+                <button
+                  type="button"
+                  class="cancel-btn"
+                  onclick="hideAddStockModal()"
+                >
+                  Cancel
+                </button>
+                <button type="button" class="submit-btn" onclick="addStock()">
+                  Add Stock
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Mutual Fund Modal -->
+      <div id="addMutualFundModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Add Mutual Fund</h3>
+            <span class="close" onclick="hideAddMutualFundModal()"
+              >&times;</span
+            >
+          </div>
+          <div class="modal-body">
+            <div id="mutualFundForm" class="investment-form">
+              <div class="form-group">
+                <label for="mfScheme">Mutual Fund Scheme</label>
+                <div class="search-input-container">
+                  <input
+                    type="text"
+                    id="mfScheme"
+                    placeholder="Search for mutual funds..."
+                    autocomplete="off"
+                    oninput="searchMutualFunds(this.value)"
+                  />
+                  <div class="search-suggestions" id="mfSuggestions"></div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="mfUnits">Units</label>
+                  <input
+                    type="number"
+                    id="mfUnits"
+                    placeholder="0.000"
+                    min="0"
+                    step="0.001"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="mfNAV">Purchase NAV</label>
+                  <input
+                    type="number"
+                    id="mfNAV"
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="mfAmount">Investment Amount</label>
+                <input
+                  type="number"
+                  id="mfAmount"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <div class="form-group">
+                <label for="mfDate">Purchase Date</label>
+                <input type="date" id="mfDate" />
+              </div>
+              <div class="form-actions">
+                <button
+                  type="button"
+                  class="cancel-btn"
+                  onclick="hideAddMutualFundModal()"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  class="submit-btn"
+                  onclick="addMutualFund()"
+                >
+                  Add Mutual Fund
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Investment Modal -->
+      <div id="editInvestmentModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Edit Investment</h3>
+            <span class="close" onclick="hideEditInvestmentModal()"
+              >&times;</span
+            >
+          </div>
+          <div class="modal-body">
+            <div id="editForm" class="investment-form">
+              <!-- Dynamic form content will be populated here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirm Delete Modal -->
+      <div id="confirmDeleteModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Confirm Delete</h3>
+            <span class="close" onclick="hideConfirmDeleteModal()"
+              >&times;</span
+            >
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this investment?</p>
+            <div class="modal-actions">
+              <button
+                type="button"
+                class="cancel-btn"
+                onclick="hideConfirmDeleteModal()"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="delete-btn"
+                onclick="confirmDelete()"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="script.js"></script>

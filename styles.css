@@ -593,6 +593,58 @@ input.input-field {
   color: var(--text-color);
 }
 
+/* Uniform styling for all form inputs and selects */
+.form-group input,
+.form-group select,
+.form-group textarea,
+input:not(.input-field):not([type="submit"]):not([type="button"]),
+select:not(.input-field) {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid var(--input-border);
+  border-radius: 18px;
+  background-color: var(--input-bg) !important;
+  color: var(--text-color);
+  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  outline: none;
+  line-height: 1.2;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  appearance: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+input:not(.input-field):not([type="submit"]):not([type="button"]):focus,
+select:not(.input-field):focus {
+  border-color: var(--button-bg);
+  box-shadow: var(--focus-shadow);
+  background-color: var(--input-bg) !important;
+  outline: none;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+input:not(.input-field)::placeholder {
+  color: var(--text-color-placeholder) !important;
+  font-size: 16px;
+  opacity: 1 !important;
+}
+
+/* Special styling for select dropdowns */
+.form-group select,
+select:not(.input-field) {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+  padding-right: 48px;
+  cursor: pointer;
+}
+
 .login-btn {
   width: 100%;
   padding: 16px;
@@ -1074,6 +1126,11 @@ input.input-field {
   box-shadow: var(--focus-shadow);
 }
 
+/* Navigation Section */
+.navigation-section {
+  margin-bottom: 30px;
+}
+
 /* Portfolio Summary */
 .summary-cards {
   display: grid;
@@ -1476,5 +1533,628 @@ input.input-field {
     padding: 8px 12px;
     font-size: 13px;
     margin-left: 8px;
+  }
+}
+
+/* Portfolio Management Styles */
+.portfolio-management {
+  margin-bottom: 20px;
+}
+
+.portfolio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.portfolio-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.refresh-btn,
+.add-investment-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.refresh-btn {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--input-border);
+}
+
+.refresh-btn:hover {
+  background-color: var(--input-border);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.refresh-btn.refreshing svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.add-investment-btn {
+  background-color: var(--button-bg);
+  color: white;
+}
+
+.add-investment-btn:hover {
+  background-color: var(--button-hover);
+}
+
+/* Holdings Section */
+.holdings-category {
+  margin-bottom: 30px;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.category-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+  padding-bottom: 8px;
+  flex: 1;
+  margin-right: 20px;
+}
+
+.add-category-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background-color: var(--button-bg);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.add-category-btn:hover {
+  background-color: var(--button-hover);
+  transform: translateY(-1px);
+}
+
+.add-category-btn svg {
+  flex-shrink: 0;
+}
+
+.holdings-container {
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.holdings-table {
+  width: 100%;
+  min-width: 1000px;
+}
+
+.holdings-header {
+  display: grid;
+  grid-template-columns: 1fr 2fr 0.8fr 1fr 1fr 1.2fr 1.2fr 1.2fr 1fr 1fr;
+  gap: 15px;
+  padding: 20px;
+  background: linear-gradient(
+    135deg,
+    var(--button-bg) 0%,
+    var(--button-hover) 100%
+  );
+  font-weight: 600;
+  font-size: 14px;
+  color: #ffffff;
+  border-bottom: 1px solid var(--button-hover);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.holdings-body {
+  max-height: 400px;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+/* Custom scrollbar styling for holdings tables */
+.holdings-container::-webkit-scrollbar,
+.holdings-body::-webkit-scrollbar {
+  height: var(--spacing-sm);
+  width: var(--spacing-sm);
+}
+
+.holdings-container::-webkit-scrollbar-track,
+.holdings-body::-webkit-scrollbar-track {
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+  margin: 2px;
+}
+
+.holdings-container::-webkit-scrollbar-thumb,
+.holdings-body::-webkit-scrollbar-thumb {
+  background: var(--input-border);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--bg-color);
+  transition: var(--transition-fast);
+}
+
+.holdings-container::-webkit-scrollbar-thumb:hover,
+.holdings-body::-webkit-scrollbar-thumb:hover {
+  background: var(--button-bg);
+  box-shadow: var(--shadow-light);
+}
+
+.holdings-container::-webkit-scrollbar-thumb:active,
+.holdings-body::-webkit-scrollbar-thumb:active {
+  background: var(--button-bg);
+}
+
+.holdings-container::-webkit-scrollbar-corner,
+.holdings-body::-webkit-scrollbar-corner {
+  background: var(--bg-color);
+}
+
+/* Global scrollbar styling for consistency */
+*::-webkit-scrollbar {
+  width: var(--spacing-sm);
+  height: var(--spacing-sm);
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--input-border);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--container-bg);
+  transition: var(--transition-fast);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--button-bg);
+  box-shadow: var(--shadow-light);
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: var(--button-bg);
+}
+
+*::-webkit-scrollbar-corner {
+  background: var(--bg-color);
+}
+
+/* Modal specific scrollbar styling */
+.modal-content::-webkit-scrollbar-thumb {
+  background: var(--text-color-light);
+  border: 1px solid var(--card-bg);
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: var(--button-bg);
+  box-shadow: var(--shadow-medium);
+}
+
+.holding-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 0.8fr 1fr 1fr 1.2fr 1.2fr 1.2fr 1fr 1fr;
+  gap: 15px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--input-border);
+  transition: background-color 0.2s ease;
+}
+
+.holding-row:hover {
+  background-color: var(--bg-color);
+}
+
+.holding-col {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 2px 0;
+}
+
+.holdings-header .holding-col {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.symbol-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.symbol {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.exchange {
+  font-size: 12px;
+  color: var(--text-color-muted);
+}
+
+.company-name {
+  font-size: 13px;
+  color: var(--text-color-light);
+  line-height: 1.3;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.positive {
+  color: var(--success-color);
+}
+
+.negative {
+  color: var(--danger-color);
+}
+
+.neutral {
+  color: var(--text-color-muted);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.portfolio-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: var(--text-color-muted);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.portfolio-action-btn:hover {
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+.edit-btn:hover {
+  color: var(--button-bg);
+}
+
+.delete-btn:hover {
+  color: var(--danger-color);
+}
+
+.no-holdings {
+  padding: 50px 25px;
+  text-align: center;
+  color: var(--text-color-muted);
+  margin: 10px 0;
+}
+
+.no-holdings a {
+  color: var(--button-bg);
+  text-decoration: none;
+}
+
+.no-holdings a:hover {
+  text-decoration: underline;
+}
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: var(--shadow-heavy);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 0;
+  border-bottom: 1px solid var(--input-border);
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-color-muted);
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.close:hover {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.modal-body {
+  padding: 0 20px 20px;
+}
+
+.investment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.search-input-container {
+  position: relative;
+}
+
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--input-border);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  display: none;
+}
+
+.search-suggestions.show {
+  display: block;
+}
+
+.suggestion-item {
+  padding: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--input-border);
+  transition: background-color 0.2s ease;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background-color: var(--bg-color);
+}
+
+.suggestion-symbol {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.suggestion-name {
+  font-size: 13px;
+  color: var(--text-color-muted);
+  margin-top: 2px;
+}
+
+.suggestion-exchange {
+  font-size: 11px;
+  color: var(--text-color-muted);
+  background-color: var(--bg-color);
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.form-actions,
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.cancel-btn,
+.submit-btn,
+.delete-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--input-border);
+}
+
+.cancel-btn:hover {
+  background-color: var(--input-border);
+}
+
+.submit-btn {
+  background-color: var(--button-bg);
+  color: white;
+}
+
+.submit-btn:hover {
+  background-color: var(--button-hover);
+}
+
+.submit-btn:disabled {
+  background-color: var(--text-color-muted);
+  cursor: not-allowed;
+}
+
+.delete-btn {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: var(--danger-hover);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .holdings-table {
+    min-width: 900px;
+  }
+
+  .holdings-header,
+  .holding-row {
+    grid-template-columns: 1fr 1.5fr 0.7fr 0.8fr 0.8fr 1fr 1fr 1fr 0.8fr 0.8fr;
+    gap: 12px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .portfolio-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .portfolio-actions {
+    justify-content: center;
+  }
+
+  .category-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .category-title {
+    margin-right: 0;
+    text-align: center;
+  }
+
+  .add-category-btn {
+    align-self: center;
+    padding: 10px 20px;
+  }
+
+  .holdings-container {
+    overflow-x: auto;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .refresh-btn,
+  .add-investment-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .refresh-btn svg,
+  .add-investment-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .modal-header {
+    padding: 15px 15px 0;
+  }
+
+  .modal-body {
+    padding: 0 15px 15px;
+  }
+
+  .modal-header h3 {
+    font-size: 16px;
   }
 }

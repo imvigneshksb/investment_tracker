@@ -3,13 +3,13 @@
 - [x] Verify that the copilot-instructions.md file in the .github directory is created.
 
 - [x] Clarify Project Requirements
-      HTML website project with login interface, dark theme toggle, and data visualization dashboard based on wireframe design
+      HTML website project with login interface and data visualization dashboard based on wireframe design
 
 - [x] Scaffold the Project
       Created HTML project structure with index.html, styles.css, script.js, and README.md files
 
 - [x] Customize the Project
-    Implemented complete wireframe design with smooth corners, dark theme toggle, login interface, action buttons, interactive chart, and data cards
+    Implemented complete wireframe design with smooth corners, login interface, action buttons, interactive chart, and data cards
 <!--
 Verify that all previous steps have been completed successfully and you have marked the step as completed.
 Develop a plan to modify codebase according to user requirements.

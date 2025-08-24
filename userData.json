@@ -4,6 +4,12 @@
       "fullName": "Admin",
       "email": "admin@mail.com",
       "password": "Admin@1234s"
+    },
+    "[object Object]": {
+      "portfolio": {
+        "stocks": [],
+        "mutualFunds": []
+      }
     }
   },
   "sessions": {
