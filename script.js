@@ -1566,8 +1566,8 @@ async function handleSignup() {
       dailyChange: 0,
       totalGain: 0,
       transactions: [],
-      holdings: []
-    }
+      holdings: [],
+    },
   };
 
   // Use email as username since we removed username field
@@ -1998,10 +1998,10 @@ function showErrorNotification(message) {
 async function initializeApp() {
   // Load user data first
   await loadUserData();
-  
+
   // Check if user is logged in
   const currentSession = getCurrentSession();
-  
+
   if (currentSession && currentSession.email) {
     // User is logged in - show dashboard/portfolio
     showPage("dashboard");
@@ -2011,7 +2011,7 @@ async function initializeApp() {
     // User is not logged in - show login page
     showPage("login");
   }
-  
+
   // Setup additional functionality
   setupInputErrorHandling();
   setupKeyboardNavigation();
@@ -2021,7 +2021,7 @@ async function initializeApp() {
 function loadUserPortfolio(userEmail) {
   const user = getUserData(userEmail);
   if (!user) return;
-  
+
   // Initialize portfolio data if it doesn't exist
   if (!user.portfolio) {
     user.portfolio = {
@@ -2029,58 +2029,77 @@ function loadUserPortfolio(userEmail) {
       dailyChange: 0,
       totalGain: 0,
       transactions: [],
-      holdings: []
+      holdings: [],
     };
   }
-  
+
   // Update portfolio summary
-  document.getElementById('portfolioValue').textContent = `$${user.portfolio.value.toFixed(2)}`;
-  document.getElementById('dailyChange').textContent = `$${user.portfolio.dailyChange.toFixed(2)}`;
-  document.getElementById('dailyChange').className = user.portfolio.dailyChange >= 0 ? 'value positive' : 'value negative';
-  document.getElementById('totalGain').textContent = `${user.portfolio.totalGain.toFixed(1)}%`;
-  document.getElementById('totalGain').className = user.portfolio.totalGain >= 0 ? 'value positive' : 'value negative';
-  
+  document.getElementById(
+    "portfolioValue"
+  ).textContent = `$${user.portfolio.value.toFixed(2)}`;
+  document.getElementById(
+    "dailyChange"
+  ).textContent = `$${user.portfolio.dailyChange.toFixed(2)}`;
+  document.getElementById("dailyChange").className =
+    user.portfolio.dailyChange >= 0 ? "value positive" : "value negative";
+  document.getElementById(
+    "totalGain"
+  ).textContent = `${user.portfolio.totalGain.toFixed(1)}%`;
+  document.getElementById("totalGain").className =
+    user.portfolio.totalGain >= 0 ? "value positive" : "value negative";
+
   // Update transactions
   loadTransactions(user.portfolio.transactions);
-  
+
   // Update holdings
   loadHoldings(user.portfolio.holdings);
 }
 
 // Load transactions into the UI
 function loadTransactions(transactions) {
-  const transactionList = document.getElementById('transactionList');
-  
+  const transactionList = document.getElementById("transactionList");
+
   if (!transactions || transactions.length === 0) {
-    transactionList.innerHTML = '<div class="no-data">No transactions yet</div>';
+    transactionList.innerHTML =
+      '<div class="no-data">No transactions yet</div>';
     return;
   }
-  
-  transactionList.innerHTML = transactions.map(transaction => `
+
+  transactionList.innerHTML = transactions
+    .map(
+      (transaction) => `
     <div class="transaction-item">
       <span class="stock">${transaction.symbol}</span>
-      <span class="action ${transaction.type.toLowerCase()}">${transaction.type}</span>
+      <span class="action ${transaction.type.toLowerCase()}">${
+        transaction.type
+      }</span>
       <span class="amount">$${transaction.amount.toFixed(2)}</span>
     </div>
-  `).join('');
+  `
+    )
+    .join("");
 }
 
 // Load holdings into the UI
 function loadHoldings(holdings) {
-  const holdingsList = document.getElementById('holdingsList');
-  
+  const holdingsList = document.getElementById("holdingsList");
+
   if (!holdings || holdings.length === 0) {
     holdingsList.innerHTML = '<div class="no-data">No holdings yet</div>';
     return;
   }
-  
-  holdingsList.innerHTML = holdings.map(holding => `
+
+  holdingsList.innerHTML = holdings
+    .map(
+      (holding) => `
     <div class="holding-item">
       <span class="symbol">${holding.symbol}</span>
       <span class="percentage">${holding.percentage.toFixed(1)}%</span>
     </div>
-  `).join('');
+  `
+    )
+    .join("");
 }
 
 // Initialize when page loads
-document.addEventListener('DOMContentLoaded', initializeApp);
+document.addEventListener("DOMContentLoaded", initializeApp);
