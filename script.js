@@ -308,14 +308,10 @@ function setupKeyboardNavigation() {
 
 // Profile dropdown toggle function
 function toggleProfileMenu() {
-  console.log("Toggle profile menu called");
   const dropdown = document.querySelector(".profile-dropdown");
   if (dropdown) {
     const currentDisplay = dropdown.style.display;
     dropdown.style.display = currentDisplay === "block" ? "none" : "block";
-    console.log("Dropdown display changed to:", dropdown.style.display);
-  } else {
-    console.log("Dropdown element not found");
   }
 }
 
@@ -953,12 +949,8 @@ document.addEventListener("click", function (event) {
 
 // Logout function
 async function logout() {
-  console.log("Logout function called");
-
   // Clear user data from storage
   await clearCurrentSession();
-
-  console.log("User data cleared");
 
   // Hide dashboard and show login
   document.getElementById("loginSection").style.display = "block";
@@ -966,41 +958,25 @@ async function logout() {
   document.getElementById("signupSection").style.display = "none";
   document.getElementById("profileSettingsSection").style.display = "none";
 
-  console.log("UI elements updated");
-
   // Update header profile visibility
   updateHeaderProfile();
 
   // Hide profile dropdown
   const dropdown = document.querySelector(".profile-dropdown");
   if (dropdown) dropdown.style.display = "none";
-
-  console.log("User logged out successfully");
 }
 
 // Update header profile visibility and info
 function updateHeaderProfile() {
-  console.log("updateHeaderProfile called");
-  console.log("userData object:", userData);
   const currentSession = getCurrentSession();
   const profileIcon = document.querySelector(".profile-icon");
 
-  console.log("Current session:", currentSession);
-  console.log("Profile icon element:", profileIcon);
-
   if (!profileIcon) {
-    console.log("Profile icon not found in DOM");
     return;
   }
 
   if (currentSession) {
-    console.log("Session data:", currentSession);
-    console.log("Adding 'show' class to profile icon");
     profileIcon.classList.add("show");
-    console.log(
-      "Profile icon classes after adding 'show':",
-      profileIcon.classList
-    );
 
     // Update profile info in dropdown
     const profileName = document.querySelector(".profile-name");
@@ -1008,17 +984,12 @@ function updateHeaderProfile() {
 
     if (profileName) {
       profileName.textContent = currentSession.name;
-      console.log("Updated profile name to:", currentSession.name);
     }
     if (profileEmail) {
       profileEmail.textContent = currentSession.email;
-      console.log("Updated profile email to:", currentSession.email);
     }
-    console.log("Profile info updated");
   } else {
-    console.log("No current session found");
     profileIcon.classList.remove("show");
-    console.log("Profile icon hidden - no current user");
   }
 }
 

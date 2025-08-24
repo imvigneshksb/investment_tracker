@@ -1,20 +1,20 @@
 # Investment Tracker
 
-A modern, responsive HTML-based investment tracking website with a clean interface and dark mode support. **Now ready for Zoho Catalyst deployment!**
+A modern, responsive HTML-based investment tracking website with offline-first design and local data persistence.
 
 ## 🌟 Features
 
+- **Offline-First Design**: Works without internet connectivity
 - **Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
 - **Dark/Light Theme**: Toggle between themes with persistence using localStorage
 - **Smooth Animations**: All interactions include smooth transitions and hover effects
 - **Interactive Chart**: Canvas-based investment growth visualization with time period controls
 - **Modern UI**: Clean interface with rounded corners and smooth gradients
-- **Login Interface**: Full user authentication with validation and signup
-- **Portfolio Tracking**: View portfolio summary, holdings, and performance metrics
-- **Market Data**: Real-time market indices display
+- **User Authentication**: Full user authentication with validation and signup
+- **Portfolio Tracking**: Local portfolio management with data persistence
+- **Local Data Storage**: All data stored locally using localStorage and file system
 - **Single Column Layout**: Clean, linear flow of information
-- **API Endpoints**: RESTful API for portfolio and market data
-- **Zoho Catalyst Ready**: Optimized for Zoho Catalyst free tier deployment
+- **No External Dependencies**: Removed all external API dependencies for improved reliability
 
 ## 🌐 Deployment Options
 
