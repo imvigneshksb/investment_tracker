@@ -269,9 +269,16 @@
         style="display: none"
       >
         <h2 class="section-title">Profile Settings</h2>
-        <div class="dropdown-container">
-          <button class="dropdown-button" onclick="toggleProfileDropdown()">
-            <span id="dropdownButtonText">Select detail to update</span>
+        <div class="details-dropdown-container">
+          <button
+            class="details-dropdown-button"
+            onclick="toggleDetailsDropdown()"
+            tabindex="0"
+            role="combobox"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <span id="detailsDropdownButtonText">Select detail to update</span>
             <svg
               class="dropdown-arrow"
               viewBox="0 0 24 24"
@@ -282,10 +289,14 @@
               <polyline points="6,9 12,15 18,9"></polyline>
             </svg>
           </button>
-          <div class="dropdown" id="profileDropdownMenu" style="display: none">
+          <div
+            class="details-dropdown"
+            id="detailsDropdownMenu"
+            style="display: none"
+          >
             <div
-              class="profile-menu-item"
-              onclick="selectDropdownOption('Name'); showEditField('name');"
+              class="details-menu-item"
+              onclick="selectDetailsDropdownOption('Name'); showEditField('name');"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -298,10 +309,10 @@
               </svg>
               Name
             </div>
-            <div class="profile-divider"></div>
+            <div class="details-divider"></div>
             <div
-              class="profile-menu-item"
-              onclick="selectDropdownOption('Email'); showEditField('email');"
+              class="details-menu-item"
+              onclick="selectDetailsDropdownOption('Email'); showEditField('email');"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -316,10 +327,10 @@
               </svg>
               Email
             </div>
-            <div class="profile-divider"></div>
+            <div class="details-divider"></div>
             <div
-              class="profile-menu-item"
-              onclick="selectDropdownOption('Password'); showEditField('password');"
+              class="details-menu-item"
+              onclick="selectDetailsDropdownOption('Password'); showEditField('password');"
             >
               <svg
                 viewBox="0 0 24 24"

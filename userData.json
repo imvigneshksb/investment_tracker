@@ -19,9 +19,9 @@
     "currentUser": {
       "name": "Admin",
       "email": "admin@mail.com",
-      "currentPage": "profile-settings"
+      "currentPage": "dashboard"
     },
     "isLoggedIn": true,
-    "currentPage": "profile-settings"
+    "currentPage": "dashboard"
   }
 }

@@ -255,6 +255,81 @@ function setupKeyboardNavigation() {
     }
   });
 
+  // Close details dropdown when clicking outside
+  document.addEventListener("click", function (e) {
+    const detailsDropdown = document.getElementById("detailsDropdownMenu");
+    const detailsButton = document.querySelector(".details-dropdown-button");
+    const detailsContainer = document.querySelector(
+      ".details-dropdown-container"
+    );
+
+    if (detailsDropdown && detailsButton && detailsContainer) {
+      // If click is outside the entire dropdown container
+      if (!detailsContainer.contains(e.target)) {
+        detailsDropdown.style.display = "none";
+        detailsButton.classList.remove("open");
+        detailsButton.setAttribute("aria-expanded", "false");
+      }
+    }
+
+    // Close stock exchange dropdown when clicking outside
+    const stockExchangeDropdown = document.getElementById(
+      "stockExchangeDropdownMenu"
+    );
+    const stockExchangeButton = document.querySelector(
+      ".stock-exchange-dropdown-button"
+    );
+    const stockExchangeContainer = document.querySelector(
+      ".stock-exchange-dropdown-container"
+    );
+
+    if (
+      stockExchangeDropdown &&
+      stockExchangeButton &&
+      stockExchangeContainer
+    ) {
+      // If click is outside the entire dropdown container
+      if (!stockExchangeContainer.contains(e.target)) {
+        stockExchangeDropdown.style.display = "none";
+        stockExchangeButton.classList.remove("open");
+        stockExchangeButton.setAttribute("aria-expanded", "false");
+      }
+    }
+  });
+
+  // Global escape key handler for details dropdown
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      const detailsDropdown = document.getElementById("detailsDropdownMenu");
+      const detailsButton = document.querySelector(".details-dropdown-button");
+
+      if (detailsDropdown && detailsDropdown.style.display === "block") {
+        detailsDropdown.style.display = "none";
+        detailsButton.classList.remove("open");
+        detailsButton.setAttribute("aria-expanded", "false");
+        detailsButton.focus();
+      }
+
+      // Handle stock exchange dropdown escape
+      const stockExchangeDropdown = document.getElementById(
+        "stockExchangeDropdownMenu"
+      );
+      const stockExchangeButton = document.querySelector(
+        ".stock-exchange-dropdown-button"
+      );
+
+      if (
+        stockExchangeDropdown &&
+        stockExchangeDropdown.style.display === "block"
+      ) {
+        stockExchangeDropdown.style.display = "none";
+        stockExchangeButton.classList.remove("open");
+        stockExchangeButton.setAttribute("aria-expanded", "false");
+        stockExchangeButton.focus();
+      }
+    }
+  });
+
   // Make profile icon focusable
   const profileIcon = document.querySelector(".profile-icon");
   if (profileIcon) {
@@ -290,6 +365,166 @@ function setupKeyboardNavigation() {
     });
   });
 
+  // Make details dropdown button focusable and keyboard accessible
+  const detailsDropdownButton = document.querySelector(
+    ".details-dropdown-button"
+  );
+  if (detailsDropdownButton) {
+    detailsDropdownButton.setAttribute("tabindex", "0");
+    detailsDropdownButton.setAttribute("role", "combobox");
+    detailsDropdownButton.setAttribute("aria-haspopup", "listbox");
+    detailsDropdownButton.setAttribute("aria-expanded", "false");
+
+    detailsDropdownButton.addEventListener("keydown", function (e) {
+      const detailsDropdown = document.getElementById("detailsDropdownMenu");
+      const detailsMenuItems = document.querySelectorAll(".details-menu-item");
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (
+          detailsDropdown.style.display === "none" ||
+          detailsDropdown.style.display === ""
+        ) {
+          // Open dropdown and focus selected or first item
+          detailsDropdown.style.display = "block";
+          this.classList.add("open");
+          this.setAttribute("aria-expanded", "true");
+          setTimeout(() => {
+            positionDropdownSafely(detailsDropdown, this);
+            updateVisualSelection();
+            focusSelectedOrFirstOption();
+          }, 10);
+        } else if (detailsMenuItems.length > 0) {
+          // If already open, focus selected or first item
+          focusSelectedOrFirstOption();
+        }
+      }
+
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        if (
+          detailsDropdown.style.display === "none" ||
+          detailsDropdown.style.display === ""
+        ) {
+          // Open dropdown and focus selected or last item
+          detailsDropdown.style.display = "block";
+          this.classList.add("open");
+          this.setAttribute("aria-expanded", "true");
+          setTimeout(() => {
+            positionDropdownSafely(detailsDropdown, this);
+            const currentSelection = getCurrentlySelectedOption();
+            if (currentSelection && detailsMenuItems.length > 0) {
+              // Find and focus the currently selected item
+              for (let item of detailsMenuItems) {
+                const itemText = item.textContent.trim();
+                if (itemText === currentSelection) {
+                  item.focus();
+                  return;
+                }
+              }
+            }
+            // If no selection, focus last item
+            if (detailsMenuItems.length > 0) {
+              detailsMenuItems[detailsMenuItems.length - 1].focus();
+            }
+          }, 10);
+        } else if (detailsMenuItems.length > 0) {
+          // If already open, focus last item
+          detailsMenuItems[detailsMenuItems.length - 1].focus();
+        }
+      }
+
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleDetailsDropdown();
+        // Don't auto-focus when opening with Enter/Space - let user choose with arrows
+      }
+    });
+  }
+
+  // Make details menu items focusable and keyboard accessible
+  const detailsMenuItems = document.querySelectorAll(".details-menu-item");
+  detailsMenuItems.forEach((item, index) => {
+    item.setAttribute("tabindex", "-1"); // Not in normal tab order
+    item.setAttribute("role", "option");
+
+    // Add focus event listener to manage visual selection
+    item.addEventListener("focus", function () {
+      // Clear selected class from all items and add to focused item
+      const allItems = document.querySelectorAll(".details-menu-item");
+      allItems.forEach((i) => i.classList.remove("selected"));
+      this.classList.add("selected");
+    });
+
+    item.addEventListener("keydown", function (e) {
+      const currentMenuItems = document.querySelectorAll(".details-menu-item");
+      const currentIndex = Array.from(currentMenuItems).indexOf(this);
+
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        this.click();
+        // Close dropdown and return focus to button
+        const detailsDropdown = document.getElementById("detailsDropdownMenu");
+        const button = document.querySelector(".details-dropdown-button");
+        if (detailsDropdown) detailsDropdown.style.display = "none";
+        if (button) {
+          button.classList.remove("open");
+          button.setAttribute("aria-expanded", "false");
+          button.focus();
+        }
+        return;
+      }
+
+      // Arrow key navigation with cycling
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const nextIndex = (currentIndex + 1) % currentMenuItems.length;
+        // Clear selected classes and add to focused item
+        currentMenuItems.forEach((item) => item.classList.remove("selected"));
+        currentMenuItems[nextIndex].classList.add("selected");
+        currentMenuItems[nextIndex].focus();
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        const prevIndex =
+          currentIndex === 0 ? currentMenuItems.length - 1 : currentIndex - 1;
+        // Clear selected classes and add to focused item
+        currentMenuItems.forEach((item) => item.classList.remove("selected"));
+        currentMenuItems[prevIndex].classList.add("selected");
+        currentMenuItems[prevIndex].focus();
+      }
+
+      // Home key - go to first item
+      if (e.key === "Home") {
+        e.preventDefault();
+        currentMenuItems.forEach((item) => item.classList.remove("selected"));
+        currentMenuItems[0].classList.add("selected");
+        currentMenuItems[0].focus();
+      }
+
+      // End key - go to last item
+      if (e.key === "End") {
+        e.preventDefault();
+        currentMenuItems.forEach((item) => item.classList.remove("selected"));
+        currentMenuItems[currentMenuItems.length - 1].classList.add("selected");
+        currentMenuItems[currentMenuItems.length - 1].focus();
+      }
+
+      // Escape key - close dropdown and return focus to button
+      if (e.key === "Escape") {
+        e.preventDefault();
+        const detailsDropdown = document.getElementById("detailsDropdownMenu");
+        const button = document.querySelector(".details-dropdown-button");
+        if (detailsDropdown) detailsDropdown.style.display = "none";
+        if (button) {
+          button.classList.remove("open");
+          button.setAttribute("aria-expanded", "false");
+          button.focus();
+        }
+      }
+    });
+  });
+
   // Password toggle keyboard support
   const passwordToggles = document.querySelectorAll(".password-toggle");
   passwordToggles.forEach((toggle) => {
@@ -301,6 +536,176 @@ function setupKeyboardNavigation() {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         this.click();
+      }
+    });
+  });
+
+  // Add window resize listener to reposition dropdown if needed
+  window.addEventListener("resize", function () {
+    const dropdown = document.getElementById("detailsDropdownMenu");
+    const button = document.querySelector(".details-dropdown-button");
+    if (dropdown && dropdown.style.display === "block" && button) {
+      setTimeout(() => {
+        positionDropdownSafely(dropdown, button);
+      }, 100);
+    }
+  });
+
+  // Stock exchange dropdown keyboard accessibility
+  setupStockExchangeDropdownAccessibility();
+}
+
+// Setup keyboard accessibility for stock exchange dropdown
+function setupStockExchangeDropdownAccessibility() {
+  const stockExchangeButton = document.querySelector(
+    ".stock-exchange-dropdown-button"
+  );
+  if (!stockExchangeButton) return; // Dropdown might not be present on all pages
+
+  stockExchangeButton.addEventListener("keydown", function (e) {
+    const stockExchangeDropdown = document.getElementById(
+      "stockExchangeDropdownMenu"
+    );
+    const stockExchangeMenuItems = document.querySelectorAll(
+      ".stock-exchange-menu-item"
+    );
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (
+        stockExchangeDropdown.style.display === "none" ||
+        stockExchangeDropdown.style.display === ""
+      ) {
+        // Open dropdown and focus first item
+        stockExchangeDropdown.style.display = "block";
+        this.classList.add("open");
+        this.setAttribute("aria-expanded", "true");
+        setTimeout(() => {
+          if (stockExchangeMenuItems.length > 0) {
+            stockExchangeMenuItems[0].focus();
+          }
+        }, 10);
+      } else if (stockExchangeMenuItems.length > 0) {
+        // If already open, focus first item
+        stockExchangeMenuItems[0].focus();
+      }
+    }
+
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (
+        stockExchangeDropdown.style.display === "none" ||
+        stockExchangeDropdown.style.display === ""
+      ) {
+        // Open dropdown and focus last item
+        stockExchangeDropdown.style.display = "block";
+        this.classList.add("open");
+        this.setAttribute("aria-expanded", "true");
+        setTimeout(() => {
+          if (stockExchangeMenuItems.length > 0) {
+            stockExchangeMenuItems[stockExchangeMenuItems.length - 1].focus();
+          }
+        }, 10);
+      } else if (stockExchangeMenuItems.length > 0) {
+        // If already open, focus last item
+        stockExchangeMenuItems[stockExchangeMenuItems.length - 1].focus();
+      }
+    }
+
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      toggleStockExchangeDropdown();
+    }
+  });
+
+  // Make stock exchange menu items focusable and keyboard accessible
+  const stockExchangeMenuItems = document.querySelectorAll(
+    ".stock-exchange-menu-item"
+  );
+  stockExchangeMenuItems.forEach((item, index) => {
+    item.setAttribute("tabindex", "-1");
+    item.setAttribute("role", "option");
+
+    // Add focus event listener to manage visual selection
+    item.addEventListener("focus", function () {
+      const allItems = document.querySelectorAll(".stock-exchange-menu-item");
+      allItems.forEach((i) => i.classList.remove("selected"));
+      this.classList.add("selected");
+    });
+
+    item.addEventListener("keydown", function (e) {
+      const currentMenuItems = document.querySelectorAll(
+        ".stock-exchange-menu-item"
+      );
+      const currentIndex = Array.from(currentMenuItems).indexOf(this);
+
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        this.click();
+        // Close dropdown and return focus to button
+        const stockExchangeDropdown = document.getElementById(
+          "stockExchangeDropdownMenu"
+        );
+        const button = document.querySelector(
+          ".stock-exchange-dropdown-button"
+        );
+        if (stockExchangeDropdown) stockExchangeDropdown.style.display = "none";
+        if (button) {
+          button.classList.remove("open");
+          button.setAttribute("aria-expanded", "false");
+          button.focus();
+        }
+        return;
+      }
+
+      // Arrow key navigation with cycling
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const nextIndex = (currentIndex + 1) % currentMenuItems.length;
+        currentMenuItems.forEach((item) => item.classList.remove("selected"));
+        currentMenuItems[nextIndex].classList.add("selected");
+        currentMenuItems[nextIndex].focus();
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        const prevIndex =
+          currentIndex === 0 ? currentMenuItems.length - 1 : currentIndex - 1;
+        currentMenuItems.forEach((item) => item.classList.remove("selected"));
+        currentMenuItems[prevIndex].classList.add("selected");
+        currentMenuItems[prevIndex].focus();
+      }
+
+      // Home key - go to first item
+      if (e.key === "Home") {
+        e.preventDefault();
+        currentMenuItems.forEach((item) => item.classList.remove("selected"));
+        currentMenuItems[0].classList.add("selected");
+        currentMenuItems[0].focus();
+      }
+
+      // End key - go to last item
+      if (e.key === "End") {
+        e.preventDefault();
+        currentMenuItems.forEach((item) => item.classList.remove("selected"));
+        currentMenuItems[currentMenuItems.length - 1].classList.add("selected");
+        currentMenuItems[currentMenuItems.length - 1].focus();
+      }
+
+      // Escape key - close dropdown and return focus to button
+      if (e.key === "Escape") {
+        e.preventDefault();
+        const stockExchangeDropdown = document.getElementById(
+          "stockExchangeDropdownMenu"
+        );
+        const button = document.querySelector(
+          ".stock-exchange-dropdown-button"
+        );
+        if (stockExchangeDropdown) stockExchangeDropdown.style.display = "none";
+        if (button) {
+          button.classList.remove("open");
+          button.setAttribute("aria-expanded", "false");
+          button.focus();
+        }
       }
     });
   });
@@ -320,6 +725,21 @@ async function showProfileSettings() {
   // Hide profile dropdown
   const dropdown = document.querySelector(".dropdown");
   if (dropdown) dropdown.style.display = "none";
+
+  // Reset details dropdown to default state
+  resetDetailsDropdown();
+
+  // Hide edit field container if it's open
+  const editFieldContainer = document.getElementById("editFieldContainer");
+  if (editFieldContainer) {
+    editFieldContainer.style.display = "none";
+  }
+
+  // Show back button
+  const backButton = document.querySelector(".profile-settings-buttons");
+  if (backButton) {
+    backButton.style.display = "flex";
+  }
 
   // Hide other sections
   document.getElementById("loginSection").style.display = "none";
@@ -630,10 +1050,51 @@ async function editPassword() {
   showSuccessNotification("Password updated successfully!");
 }
 
-// Toggle profile dropdown visibility
+// Toggle details update dropdown visibility (separate from profile menu)
+function toggleDetailsDropdown() {
+  const dropdown = document.getElementById("detailsDropdownMenu");
+  const button = document.querySelector(".details-dropdown-button");
+
+  if (dropdown.style.display === "none" || dropdown.style.display === "") {
+    dropdown.style.display = "block";
+    button.classList.add("open");
+    button.setAttribute("aria-expanded", "true");
+
+    // Check positioning to avoid header overlap
+    setTimeout(() => {
+      positionDropdownSafely(dropdown, button);
+      updateVisualSelection();
+      // Only auto-focus if button currently has focus (opened via keyboard)
+      // Don't auto-focus for mouse clicks
+    }, 10);
+  } else {
+    dropdown.style.display = "none";
+    button.classList.remove("open");
+    button.setAttribute("aria-expanded", "false");
+  }
+}
+
+// Legacy function for backward compatibility - now calls details dropdown
 function toggleProfileDropdown() {
-  const dropdown = document.getElementById("profileDropdownMenu");
-  const button = document.querySelector(".dropdown-button");
+  toggleDetailsDropdown();
+}
+
+// Update details dropdown button text with selected option
+function selectDetailsDropdownOption(optionName) {
+  const buttonText = document.getElementById("detailsDropdownButtonText");
+  if (buttonText) {
+    buttonText.textContent = optionName;
+  }
+
+  // Remove selected class from all items since we're selecting a new one
+  const detailsMenuItems = document.querySelectorAll(".details-menu-item");
+  detailsMenuItems.forEach((item) => item.classList.remove("selected"));
+}
+
+// Stock Exchange Dropdown Functions
+function toggleStockExchangeDropdown() {
+  const dropdown = document.getElementById("stockExchangeDropdownMenu");
+  const button = document.querySelector(".stock-exchange-dropdown-button");
 
   if (dropdown.style.display === "none" || dropdown.style.display === "") {
     dropdown.style.display = "block";
@@ -646,21 +1107,58 @@ function toggleProfileDropdown() {
   }
 }
 
-// Update dropdown button text with selected option
-function selectDropdownOption(optionName) {
-  const buttonText = document.getElementById("dropdownButtonText");
+function selectStockExchangeOption(optionValue) {
+  const buttonText = document.getElementById("stockExchangeButtonText");
+  const hiddenInput = document.getElementById("stockExchange");
+  const dropdown = document.getElementById("stockExchangeDropdownMenu");
+  const button = document.querySelector(".stock-exchange-dropdown-button");
+
   if (buttonText) {
-    buttonText.textContent = optionName;
+    buttonText.textContent = optionValue;
   }
+
+  if (hiddenInput) {
+    hiddenInput.value = optionValue;
+  }
+
+  // Close dropdown
+  if (dropdown) {
+    dropdown.style.display = "none";
+  }
+  if (button) {
+    button.classList.remove("open");
+    button.setAttribute("aria-expanded", "false");
+  }
+
+  // Remove selected class from all items and add to clicked item
+  const stockExchangeMenuItems = document.querySelectorAll(
+    ".stock-exchange-menu-item"
+  );
+  stockExchangeMenuItems.forEach((item) => {
+    item.classList.remove("selected");
+    if (item.textContent.trim() === optionValue) {
+      item.classList.add("selected");
+    }
+  });
 }
 
-// Hide profile dropdown
-function hideProfileDropdown() {
-  const dropdown = document.getElementById("profileDropdownMenu");
-  const button = document.querySelector(".dropdown-button");
+// Legacy function for backward compatibility - now calls details dropdown
+function selectDropdownOption(optionName) {
+  selectDetailsDropdownOption(optionName);
+}
+
+// Hide details dropdown
+function hideDetailsDropdown() {
+  const dropdown = document.getElementById("detailsDropdownMenu");
+  const button = document.querySelector(".details-dropdown-button");
 
   dropdown.style.display = "none";
   button.classList.remove("open");
+}
+
+// Legacy function for backward compatibility - now calls details dropdown
+function hideProfileDropdown() {
+  hideDetailsDropdown();
 }
 
 // Show edit field for selected option
@@ -670,23 +1168,40 @@ function showEditField(fieldType) {
   const input = document.getElementById("editFieldInput");
   const confirmGroup = document.getElementById("confirmPasswordGroup");
   const currentSession = getCurrentSession();
-  const dropdownContainer = document.querySelector(".dropdown-container");
+
+  // Check for both legacy and new dropdown containers
+  const legacyDropdownContainer = document.querySelector(".dropdown-container");
+  const detailsDropdownContainer = document.querySelector(
+    ".details-dropdown-container"
+  );
 
   // Keep dropdown container visible, but hide the dropdown menu
-  if (dropdownContainer) {
-    dropdownContainer.style.display = "block";
+  if (detailsDropdownContainer) {
+    detailsDropdownContainer.style.display = "block";
+  } else if (legacyDropdownContainer) {
+    legacyDropdownContainer.style.display = "block";
   }
 
-  // Hide only the dropdown menu, not the container
-  const dropdown = document.getElementById("profileDropdownMenu");
-  if (dropdown) {
-    dropdown.style.display = "none";
+  // Hide dropdown menus (both legacy and new)
+  const legacyDropdown = document.getElementById("profileDropdownMenu");
+  const detailsDropdown = document.getElementById("detailsDropdownMenu");
+
+  if (detailsDropdown) {
+    detailsDropdown.style.display = "none";
+  }
+  if (legacyDropdown) {
+    legacyDropdown.style.display = "none";
   }
 
-  // Remove open class from button
-  const button = document.querySelector(".dropdown-button");
-  if (button) {
-    button.classList.remove("open");
+  // Remove open class from buttons (both legacy and new)
+  const legacyButton = document.querySelector(".dropdown-button");
+  const detailsButton = document.querySelector(".details-dropdown-button");
+
+  if (detailsButton) {
+    detailsButton.classList.remove("open");
+  }
+  if (legacyButton) {
+    legacyButton.classList.remove("open");
   }
 
   // Hide back to dashboard button when editing
@@ -730,15 +1245,37 @@ function showEditField(fieldType) {
 function cancelFieldEdit() {
   const container = document.getElementById("editFieldContainer");
   const backButton = document.querySelector(".profile-settings-buttons");
-  const dropdownButton = document.getElementById("dropdownButtonText");
-  const dropdownContainer = document.querySelector(".dropdown-container");
+
+  // Handle both legacy and new dropdown systems
+  const legacyDropdownButton = document.getElementById("dropdownButtonText");
+  const legacyDropdownContainer = document.querySelector(".dropdown-container");
+  const detailsDropdownContainer = document.querySelector(
+    ".details-dropdown-container"
+  );
+
+  // Reset dropdowns to default state
+  resetDetailsDropdown();
+
+  // Reset legacy dropdown to default state
+  const legacyDropdown = document.getElementById("profileDropdownMenu");
+  const legacyButton = document.querySelector(".dropdown-button");
+
+  if (legacyDropdown) {
+    legacyDropdown.style.display = "none";
+  }
+  if (legacyButton) {
+    legacyButton.classList.remove("open");
+  }
 
   // Hide edit form
   container.style.display = "none";
 
-  // Show dropdown container (reset to default state)
-  if (dropdownContainer) {
-    dropdownContainer.style.display = "block";
+  // Show dropdown containers (reset to default state)
+  if (detailsDropdownContainer) {
+    detailsDropdownContainer.style.display = "block";
+  }
+  if (legacyDropdownContainer) {
+    legacyDropdownContainer.style.display = "block";
   }
 
   // Show back button
@@ -746,15 +1283,128 @@ function cancelFieldEdit() {
     backButton.style.display = "flex";
   }
 
-  // Reset dropdown button text to default
-  if (dropdownButton) {
-    dropdownButton.textContent = "Select detail to update";
+  // Reset legacy dropdown button text to default
+  if (legacyDropdownButton) {
+    legacyDropdownButton.textContent = "Select detail to update";
   }
 
   // Clear form
   document.getElementById("editFieldInput").value = "";
   document.getElementById("confirmPasswordInput").value = "";
   clearAllErrors();
+}
+
+// Reset details dropdown to default state
+function resetDetailsDropdown() {
+  const detailsDropdown = document.getElementById("detailsDropdownMenu");
+  const detailsButton = document.querySelector(".details-dropdown-button");
+  const detailsDropdownButton = document.getElementById(
+    "detailsDropdownButtonText"
+  );
+
+  // Close dropdown
+  if (detailsDropdown) {
+    detailsDropdown.style.display = "none";
+  }
+
+  // Reset button state
+  if (detailsButton) {
+    detailsButton.classList.remove("open");
+    detailsButton.setAttribute("aria-expanded", "false");
+  }
+
+  // Reset button text to default
+  if (detailsDropdownButton) {
+    detailsDropdownButton.textContent = "Select detail to update";
+  }
+}
+
+// Get currently selected dropdown option based on button text
+function getCurrentlySelectedOption() {
+  const buttonText = document.getElementById("detailsDropdownButtonText");
+  if (!buttonText) return null;
+
+  const currentText = buttonText.textContent.trim();
+  if (currentText === "Select detail to update") return null;
+
+  return currentText;
+}
+
+// Focus the currently selected option or first option if none selected (only used for keyboard navigation)
+function focusSelectedOrFirstOption() {
+  const detailsMenuItems = document.querySelectorAll(".details-menu-item");
+  const currentSelection = getCurrentlySelectedOption();
+
+  if (currentSelection && detailsMenuItems.length > 0) {
+    // Find the menu item that matches the current selection
+    for (let item of detailsMenuItems) {
+      const itemText = item.textContent.trim();
+      if (itemText === currentSelection) {
+        item.focus();
+        return;
+      }
+    }
+  }
+
+  // If no match found or no current selection, focus first item
+  if (detailsMenuItems.length > 0) {
+    detailsMenuItems[0].focus();
+  }
+}
+
+// Position dropdown safely to avoid header overlap
+function positionDropdownSafely(dropdown, button) {
+  const header = document.querySelector(".main-header");
+  const profileSettingsSection = button.closest("section");
+
+  if (!header || !profileSettingsSection) return;
+
+  // Reset positioning and classes - always position dropdown below
+  dropdown.style.top = "100%";
+  dropdown.style.bottom = "auto";
+  dropdown.classList.remove("dropdown-above", "behind-header");
+  dropdown.style.zIndex = ""; // Reset inline z-index
+
+  // Get dimensions and positions
+  const headerRect = header.getBoundingClientRect();
+  const buttonRect = button.getBoundingClientRect();
+  const sectionRect = profileSettingsSection.getBoundingClientRect();
+
+  // Calculate where dropdown would appear if positioned normally
+  const dropdownHeight = dropdown.offsetHeight || 200; // Estimate if not rendered
+  const dropdownTop = buttonRect.bottom + 4; // 4px margin
+  const dropdownBottom = dropdownTop + dropdownHeight;
+
+  // Check if button is in the upper portion of the section (likely to cause header overlap)
+  const buttonDistanceFromSectionTop = buttonRect.top - sectionRect.top;
+  const isButtonNearTop = buttonDistanceFromSectionTop < 150; // If button is within 150px of section top
+
+  // Always position dropdown behind header if button is near top of section to avoid overlap
+  if (isButtonNearTop) {
+    // Force dropdown to go behind header but still below the button
+    dropdown.classList.add("behind-header");
+  }
+  // Always use default positioning below the button with appropriate z-index
+}
+
+// Update visual selection when dropdown opens
+function updateVisualSelection() {
+  const detailsMenuItems = document.querySelectorAll(".details-menu-item");
+  const currentSelection = getCurrentlySelectedOption();
+
+  // Remove any existing selected classes
+  detailsMenuItems.forEach((item) => item.classList.remove("selected"));
+
+  if (currentSelection && detailsMenuItems.length > 0) {
+    // Find and mark the currently selected item
+    for (let item of detailsMenuItems) {
+      const itemText = item.textContent.trim();
+      if (itemText === currentSelection) {
+        item.classList.add("selected");
+        break;
+      }
+    }
+  }
 }
 
 // Save field edit
@@ -2257,11 +2907,31 @@ function showAddStockModal() {
         <form id="stockForm" onsubmit="addStock(event)">
           <div class="form-group">
             <label for="stockExchange">Exchange</label>
-            <select id="stockExchange" required class="form-select">
-              <option value="">Select Stock Exchange</option>
-              <option value="NSE">NSE</option>
-              <option value="BSE">BSE</option>
-            </select>
+            <div class="stock-exchange-dropdown-container">
+              <button type="button" class="stock-exchange-dropdown-button" onclick="toggleStockExchangeDropdown()" tabindex="0" role="combobox" aria-haspopup="listbox" aria-expanded="false">
+                <span id="stockExchangeButtonText">Select Stock Exchange</span>
+                <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6,9 12,15 18,9"></polyline>
+                </svg>
+              </button>
+              <div class="stock-exchange-dropdown" id="stockExchangeDropdownMenu" style="display: none">
+                <div class="stock-exchange-menu-item" onclick="selectStockExchangeOption('NSE')" tabindex="-1" role="option">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"></path>
+                  </svg>
+                  NSE
+                </div>
+                <div class="stock-exchange-menu-item" onclick="selectStockExchangeOption('BSE')" tabindex="-1" role="option">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"></path>
+                  </svg>
+                  BSE
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="stockExchange" name="stockExchange" required>
           </div>
           
           <div class="form-group">
