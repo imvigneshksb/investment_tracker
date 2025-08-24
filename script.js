@@ -85,11 +85,42 @@ async function setCurrentSession(sessionData) {
   userData.sessions.currentUser = sessionData;
   userData.sessions.isLoggedIn = true;
   userData.sessions.currentPage = sessionData.currentPage || "dashboard";
+
+  // Show profile icon and update profile info
+  const profileIcon = document.getElementById("profileIcon");
+  const profileName = document.getElementById("profileName");
+  const profileEmail = document.getElementById("profileEmail");
+
+  if (profileIcon) {
+    profileIcon.classList.add("show");
+  }
+
+  if (profileName) {
+    profileName.textContent = `${sessionData.firstName} ${sessionData.lastName}`;
+  }
+
+  if (profileEmail) {
+    profileEmail.textContent = sessionData.email;
+  }
+
   await saveUserData();
 }
 
 async function clearCurrentSession() {
   userData.sessions = {};
+
+  // Hide profile icon and clear profile info
+  const profileIcon = document.getElementById("profileIcon");
+  const profileDropdown = document.getElementById("profileDropdown");
+
+  if (profileIcon) {
+    profileIcon.classList.remove("show");
+  }
+
+  if (profileDropdown) {
+    profileDropdown.style.display = "none";
+  }
+
   await saveUserData();
 }
 
@@ -327,6 +358,17 @@ function toggleProfileMenu() {
   if (menu) {
     menu.style.display = menu.style.display === "block" ? "none" : "block";
   }
+}
+
+function showProfileSettings() {
+  // Close the dropdown menu
+  const menu = document.querySelector(".profile-dropdown");
+  if (menu) {
+    menu.style.display = "none";
+  }
+
+  // Navigate to profile settings page
+  showPage("profile-settings");
 }
 
 async function logout() {
@@ -984,6 +1026,23 @@ document.addEventListener("DOMContentLoaded", async function () {
   // Check if user is logged in
   const session = getCurrentSession();
   if (session) {
+    // Update profile UI
+    const profileIcon = document.getElementById("profileIcon");
+    const profileName = document.getElementById("profileName");
+    const profileEmail = document.getElementById("profileEmail");
+
+    if (profileIcon) {
+      profileIcon.classList.add("show");
+    }
+
+    if (profileName && session.firstName && session.lastName) {
+      profileName.textContent = `${session.firstName} ${session.lastName}`;
+    }
+
+    if (profileEmail && session.email) {
+      profileEmail.textContent = session.email;
+    }
+
     showPage("dashboard");
     await loadPortfolio();
   } else {
@@ -1026,21 +1085,281 @@ document.addEventListener("DOMContentLoaded", async function () {
       e.target.style.display = "none";
     }
   });
+
+  // Close profile dropdown when clicking outside
+  document.addEventListener("click", function (e) {
+    const dropdown = document.getElementById("profileDropdownMenu");
+    const button = document.querySelector(".dropdown-button");
+    const dropdownContainer = document.querySelector(".dropdown-container");
+
+    if (
+      dropdown &&
+      button &&
+      dropdownContainer &&
+      !dropdownContainer.contains(e.target) &&
+      dropdown.style.display === "block"
+    ) {
+      dropdown.style.display = "none";
+      button.classList.remove("open");
+    }
+  });
 });
 
-// Profile settings functionality (legacy support)
+// Profile settings functionality
 function toggleProfileDropdown() {
-  // Implementation for profile dropdown
+  const dropdown = document.getElementById("profileDropdownMenu");
+  const button = document.querySelector(".dropdown-button");
+
+  if (dropdown && button) {
+    const isVisible = dropdown.style.display === "block";
+
+    if (isVisible) {
+      dropdown.style.display = "none";
+      button.classList.remove("open");
+    } else {
+      dropdown.style.display = "block";
+      button.classList.add("open");
+    }
+  }
 }
 
-function selectFieldToEdit(field) {
-  // Implementation for field editing
+function selectDropdownOption(optionText) {
+  const buttonText = document.getElementById("dropdownButtonText");
+  const dropdown = document.getElementById("profileDropdownMenu");
+
+  if (buttonText) {
+    buttonText.textContent = optionText;
+  }
+
+  if (dropdown) {
+    dropdown.style.display = "none";
+  }
 }
 
-function saveFieldEdit() {
-  // Implementation for saving field edits
+function showEditField(fieldType) {
+  const container = document.getElementById("editFieldContainer");
+  const label = document.getElementById("fieldLabel");
+  const input = document.getElementById("editFieldInput");
+  const confirmGroup = document.getElementById("confirmPasswordGroup");
+
+  if (!container || !label || !input) return;
+
+  // Clear previous values
+  input.value = "";
+  const errorElement = document.getElementById("editFieldError");
+  if (errorElement) {
+    errorElement.style.display = "none";
+    errorElement.textContent = "";
+  }
+
+  const confirmErrorElement = document.getElementById("confirmPasswordError");
+  if (confirmErrorElement) {
+    confirmErrorElement.style.display = "none";
+    confirmErrorElement.textContent = "";
+  }
+
+  // Set up field based on type
+  switch (fieldType) {
+    case "name":
+      label.textContent = "Full Name";
+      input.type = "text";
+      input.placeholder = "Enter your full name";
+      if (confirmGroup) confirmGroup.style.display = "none";
+
+      // Pre-fill current name if available
+      const session = getCurrentSession();
+      if (session && session.firstName && session.lastName) {
+        input.value = `${session.firstName} ${session.lastName}`;
+      }
+      break;
+
+    case "email":
+      label.textContent = "Email Address";
+      input.type = "email";
+      input.placeholder = "Enter your email address";
+      if (confirmGroup) confirmGroup.style.display = "none";
+
+      // Pre-fill current email if available
+      const currentSession = getCurrentSession();
+      if (currentSession && currentSession.email) {
+        input.value = currentSession.email;
+      }
+      break;
+
+    case "password":
+      label.textContent = "New Password";
+      input.type = "password";
+      input.placeholder = "Enter new password";
+      if (confirmGroup) confirmGroup.style.display = "block";
+      break;
+  }
+
+  // Store field type for saving
+  input.setAttribute("data-field-type", fieldType);
+
+  // Show the edit container
+  container.style.display = "block";
 }
 
-function cancelEdit() {
-  // Implementation for canceling edits
+async function saveFieldEdit() {
+  const input = document.getElementById("editFieldInput");
+  const fieldType = input?.getAttribute("data-field-type");
+  const newValue = input?.value?.trim();
+
+  if (!input || !fieldType || !newValue) {
+    showFieldError("editFieldError", "Please enter a value");
+    return;
+  }
+
+  // Validation
+  if (fieldType === "email" && !isValidEmail(newValue)) {
+    showFieldError("editFieldError", "Please enter a valid email address");
+    return;
+  }
+
+  if (fieldType === "password") {
+    const confirmInput = document.getElementById("confirmPasswordInput");
+    const confirmValue = confirmInput?.value;
+
+    if (newValue.length < 6) {
+      showFieldError(
+        "editFieldError",
+        "Password must be at least 6 characters long"
+      );
+      return;
+    }
+
+    if (newValue !== confirmValue) {
+      showFieldError("confirmPasswordError", "Passwords do not match");
+      return;
+    }
+  }
+
+  try {
+    const session = getCurrentSession();
+    if (!session) {
+      showNotification("Please log in again", "error");
+      return;
+    }
+
+    // Update user data
+    if (fieldType === "name") {
+      const nameParts = newValue.split(" ");
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      // Update session
+      session.firstName = firstName;
+      session.lastName = lastName;
+
+      // Update user data in storage
+      if (userData.users[session.email]) {
+        userData.users[session.email].firstName = firstName;
+        userData.users[session.email].lastName = lastName;
+        userData.users[session.email].fullName = newValue;
+      }
+
+      // Update profile display
+      const profileName = document.getElementById("profileName");
+      if (profileName) {
+        profileName.textContent = newValue;
+      }
+    } else if (fieldType === "email") {
+      const oldEmail = session.email;
+
+      // Check if new email already exists
+      if (userData.users[newValue] && newValue !== oldEmail) {
+        showFieldError(
+          "editFieldError",
+          "This email address is already in use"
+        );
+        return;
+      }
+
+      // Update user data
+      if (userData.users[oldEmail]) {
+        userData.users[newValue] = { ...userData.users[oldEmail] };
+        delete userData.users[oldEmail];
+      }
+
+      // Update session
+      session.email = newValue;
+
+      // Update profile display
+      const profileEmail = document.getElementById("profileEmail");
+      if (profileEmail) {
+        profileEmail.textContent = newValue;
+      }
+    } else if (fieldType === "password") {
+      // Update password in user data
+      if (userData.users[session.email]) {
+        userData.users[session.email].password = newValue;
+      }
+    }
+
+    // Save updated data
+    await setCurrentSession(session);
+    await saveUserData();
+
+    showNotification(
+      `${
+        fieldType.charAt(0).toUpperCase() + fieldType.slice(1)
+      } updated successfully!`,
+      "success"
+    );
+    cancelFieldEdit();
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    showNotification("Failed to update profile. Please try again.", "error");
+  }
+}
+
+function cancelFieldEdit() {
+  const container = document.getElementById("editFieldContainer");
+  const dropdown = document.getElementById("profileDropdownMenu");
+  const buttonText = document.getElementById("dropdownButtonText");
+
+  if (container) {
+    container.style.display = "none";
+  }
+
+  if (dropdown) {
+    dropdown.style.display = "none";
+  }
+
+  if (buttonText) {
+    buttonText.textContent = "Select detail to update";
+  }
+
+  // Clear any error messages
+  clearFieldErrors();
+}
+
+function cancelProfileSettings() {
+  cancelFieldEdit();
+  showPage("dashboard");
+}
+
+function showFieldError(elementId, message) {
+  const errorElement = document.getElementById(elementId);
+  if (errorElement) {
+    errorElement.textContent = message;
+    errorElement.style.display = "block";
+  }
+}
+
+function clearFieldErrors() {
+  const errorElements = ["editFieldError", "confirmPasswordError"];
+  errorElements.forEach((id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.style.display = "none";
+      element.textContent = "";
+    }
+  });
+}
+
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }

@@ -1,11 +1,11 @@
 {
   "users": {
     "admin@mail.com": {
-      "fullName": "Admin",
+      "firstName": "Admin",
+      "lastName": "User",
+      "fullName": "Admin User",
       "email": "admin@mail.com",
-      "password": "Admin@1234s"
-    },
-    "[object Object]": {
+      "password": "Admin@1234s",
       "portfolio": {
         "stocks": [],
         "mutualFunds": []
@@ -14,7 +14,8 @@
   },
   "sessions": {
     "currentUser": {
-      "name": "Admin",
+      "firstName": "Admin",
+      "lastName": "User",
       "email": "admin@mail.com",
       "currentPage": "dashboard"
     },
