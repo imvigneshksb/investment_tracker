@@ -464,13 +464,94 @@
           </div>
         </section>
 
-        <!-- Top Holdings Section -->
+        <!-- Holdings Section -->
         <section class="holdings-section">
-          <h2 class="section-title">Top Holdings</h2>
-          <div class="dashboard-card">
-            <div class="holdings-list" id="holdingsList">
-              <!-- Holdings will be loaded dynamically -->
-              <div class="no-data">No holdings yet</div>
+          <h2 class="section-title">Holdings</h2>
+
+          <!-- Stocks Holdings -->
+          <div class="holdings-category">
+            <div class="category-header">
+              <h3 class="category-title">Stocks</h3>
+              <button class="add-category-btn" onclick="showAddStockModal()">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Stock
+              </button>
+            </div>
+            <div class="holdings-container">
+              <div class="holdings-table">
+                <div class="holdings-header">
+                  <div class="holding-col">Symbol</div>
+                  <div class="holding-col">Company</div>
+                  <div class="holding-col">Qty</div>
+                  <div class="holding-col">Avg Price</div>
+                  <div class="holding-col">Current Price</div>
+                  <div class="holding-col">Investment</div>
+                  <div class="holding-col">Current Value</div>
+                  <div class="holding-col">Gain/Loss</div>
+                  <div class="holding-col">Return %</div>
+                  <div class="holding-col">Actions</div>
+                </div>
+                <div class="holdings-body" id="stocksTableBody">
+                  <div class="no-holdings">
+                    <p>No stocks in portfolio</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mutual Funds Holdings -->
+          <div class="holdings-category">
+            <div class="category-header">
+              <h3 class="category-title">Mutual Funds</h3>
+              <button
+                class="add-category-btn"
+                onclick="showAddMutualFundModal()"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Mutual Fund
+              </button>
+            </div>
+            <div class="holdings-container">
+              <div class="holdings-table">
+                <div class="holdings-header">
+                  <div class="holding-col">Scheme</div>
+                  <div class="holding-col">Fund Name</div>
+                  <div class="holding-col">Units</div>
+                  <div class="holding-col">Avg NAV</div>
+                  <div class="holding-col">Current NAV</div>
+                  <div class="holding-col">Investment</div>
+                  <div class="holding-col">Current Value</div>
+                  <div class="holding-col">Gain/Loss</div>
+                  <div class="holding-col">Return %</div>
+                  <div class="holding-col">Actions</div>
+                </div>
+                <div class="holdings-body" id="mutualFundsTableBody">
+                  <div class="no-holdings">
+                    <p>No mutual funds in portfolio</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

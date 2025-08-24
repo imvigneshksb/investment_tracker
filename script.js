@@ -2030,29 +2030,37 @@ function loadUserPortfolio(userEmail) {
       totalGain: 0,
       transactions: [],
       holdings: [],
+      stocks: [],
+      mutualFunds: []
     };
   }
 
   // Update portfolio summary
-  document.getElementById(
-    "portfolioValue"
-  ).textContent = `$${user.portfolio.value.toFixed(2)}`;
-  document.getElementById(
-    "dailyChange"
-  ).textContent = `$${user.portfolio.dailyChange.toFixed(2)}`;
-  document.getElementById("dailyChange").className =
-    user.portfolio.dailyChange >= 0 ? "value positive" : "value negative";
-  document.getElementById(
-    "totalGain"
-  ).textContent = `${user.portfolio.totalGain.toFixed(1)}%`;
-  document.getElementById("totalGain").className =
-    user.portfolio.totalGain >= 0 ? "value positive" : "value negative";
+  const portfolioValueEl = document.getElementById("portfolioValue");
+  const dailyChangeEl = document.getElementById("dailyChange");
+  const totalGainEl = document.getElementById("totalGain");
+
+  if (portfolioValueEl) {
+    portfolioValueEl.textContent = `$${user.portfolio.value.toFixed(2)}`;
+  }
+  if (dailyChangeEl) {
+    dailyChangeEl.textContent = `$${user.portfolio.dailyChange.toFixed(2)}`;
+    dailyChangeEl.className = user.portfolio.dailyChange >= 0 ? "value positive" : "value negative";
+  }
+  if (totalGainEl) {
+    totalGainEl.textContent = `${user.portfolio.totalGain.toFixed(1)}%`;
+    totalGainEl.className = user.portfolio.totalGain >= 0 ? "value positive" : "value negative";
+  }
 
   // Update transactions
   loadTransactions(user.portfolio.transactions);
 
   // Update holdings
   loadHoldings(user.portfolio.holdings);
+  
+  // Load stocks and mutual funds tables
+  loadStocksTable(user.portfolio.stocks || []);
+  loadMutualFundsTable(user.portfolio.mutualFunds || []);
 }
 
 // Load transactions into the UI
@@ -2099,6 +2107,376 @@ function loadHoldings(holdings) {
   `
     )
     .join("");
+}
+
+// Holdings Management Functions
+
+// Load stocks table with grid layout
+function loadStocksTable(stocks) {
+  const tableBody = document.getElementById("stocksTableBody");
+  
+  if (!stocks || stocks.length === 0) {
+    tableBody.innerHTML = `
+      <div class="no-holdings">
+        <p>No stocks in portfolio</p>
+      </div>
+    `;
+    return;
+  }
+
+  tableBody.innerHTML = stocks
+    .map((stock, index) => {
+      const investment = stock.quantity * stock.avgPrice;
+      const currentValue = stock.quantity * stock.currentPrice;
+      const gainLoss = currentValue - investment;
+      const returnPercent = investment > 0 ? (gainLoss / investment) * 100 : 0;
+      const gainLossClass = gainLoss >= 0 ? "positive" : "negative";
+
+      return `
+        <div class="holding-row">
+          <div class="holding-col">
+            <div class="symbol-info">
+              <span class="symbol">${stock.symbol}</span>
+            </div>
+          </div>
+          <div class="holding-col">
+            <span class="company-name">${stock.company || stock.symbol}</span>
+          </div>
+          <div class="holding-col">${stock.quantity}</div>
+          <div class="holding-col">₹${stock.avgPrice.toFixed(2)}</div>
+          <div class="holding-col">₹${stock.currentPrice.toFixed(2)}</div>
+          <div class="holding-col">₹${investment.toFixed(2)}</div>
+          <div class="holding-col">₹${currentValue.toFixed(2)}</div>
+          <div class="holding-col">
+            <span class="${gainLossClass}">₹${gainLoss.toFixed(2)}</span>
+          </div>
+          <div class="holding-col">
+            <span class="${gainLossClass}">${returnPercent.toFixed(2)}%</span>
+          </div>
+          <div class="holding-col">
+            <div class="actions">
+              <button class="portfolio-action-btn edit-btn" onclick="editStock(${index})" title="Edit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+              <button class="portfolio-action-btn delete-btn" onclick="deleteStock(${index})" title="Delete">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3,6 5,6 21,6"></polyline>
+                  <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+// Load mutual funds table with grid layout
+function loadMutualFundsTable(mutualFunds) {
+  const tableBody = document.getElementById("mutualFundsTableBody");
+  
+  if (!mutualFunds || mutualFunds.length === 0) {
+    tableBody.innerHTML = `
+      <div class="no-holdings">
+        <p>No mutual funds in portfolio</p>
+      </div>
+    `;
+    return;
+  }
+
+  tableBody.innerHTML = mutualFunds
+    .map((fund, index) => {
+      const investment = fund.units * fund.avgNAV;
+      const currentValue = fund.units * fund.currentNAV;
+      const gainLoss = currentValue - investment;
+      const returnPercent = investment > 0 ? (gainLoss / investment) * 100 : 0;
+      const gainLossClass = gainLoss >= 0 ? "positive" : "negative";
+
+      return `
+        <div class="holding-row">
+          <div class="holding-col">
+            <span class="symbol">${fund.scheme}</span>
+          </div>
+          <div class="holding-col">
+            <span class="company-name">${fund.fundName}</span>
+          </div>
+          <div class="holding-col">${fund.units.toFixed(3)}</div>
+          <div class="holding-col">₹${fund.avgNAV.toFixed(2)}</div>
+          <div class="holding-col">₹${fund.currentNAV.toFixed(2)}</div>
+          <div class="holding-col">₹${investment.toFixed(2)}</div>
+          <div class="holding-col">₹${currentValue.toFixed(2)}</div>
+          <div class="holding-col">
+            <span class="${gainLossClass}">₹${gainLoss.toFixed(2)}</span>
+          </div>
+          <div class="holding-col">
+            <span class="${gainLossClass}">${returnPercent.toFixed(2)}%</span>
+          </div>
+          <div class="holding-col">
+            <div class="actions">
+              <button class="portfolio-action-btn edit-btn" onclick="editMutualFund(${index})" title="Edit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+              <button class="portfolio-action-btn delete-btn" onclick="deleteMutualFund(${index})" title="Delete">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3,6 5,6 21,6"></polyline>
+                  <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+// Modal functions for adding investments
+function showAddStockModal() {
+  // Create and show modal - you can customize this based on your modal implementation
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.id = 'addStockModal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Stock</h3>
+        <span class="close" onclick="hideAddStockModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="stockForm" onsubmit="addStock(event)">
+          <div class="form-group">
+            <label for="stockSymbol">Symbol</label>
+            <input type="text" id="stockSymbol" required placeholder="e.g., RELIANCE">
+          </div>
+          <div class="form-group">
+            <label for="stockCompany">Company</label>
+            <input type="text" id="stockCompany" required placeholder="e.g., Reliance Industries Ltd">
+          </div>
+          <div class="form-group">
+            <label for="stockQuantity">Quantity</label>
+            <input type="number" id="stockQuantity" required min="1">
+          </div>
+          <div class="form-group">
+            <label for="stockAvgPrice">Average Price (₹)</label>
+            <input type="number" id="stockAvgPrice" required min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="stockCurrentPrice">Current Price (₹)</label>
+            <input type="number" id="stockCurrentPrice" required min="0" step="0.01">
+          </div>
+          <div class="form-actions">
+            <button type="button" onclick="hideAddStockModal()">Cancel</button>
+            <button type="submit">Add Stock</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.style.display = 'block';
+}
+
+function hideAddStockModal() {
+  const modal = document.getElementById('addStockModal');
+  if (modal) {
+    modal.remove();
+  }
+}
+
+function showAddMutualFundModal() {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.id = 'addMutualFundModal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Mutual Fund</h3>
+        <span class="close" onclick="hideAddMutualFundModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="mutualFundForm" onsubmit="addMutualFund(event)">
+          <div class="form-group">
+            <label for="fundScheme">Scheme Code</label>
+            <input type="text" id="fundScheme" required placeholder="e.g., 120503">
+          </div>
+          <div class="form-group">
+            <label for="fundName">Fund Name</label>
+            <input type="text" id="fundName" required placeholder="e.g., SBI Large & Midcap Fund">
+          </div>
+          <div class="form-group">
+            <label for="fundUnits">Units</label>
+            <input type="number" id="fundUnits" required min="0" step="0.001">
+          </div>
+          <div class="form-group">
+            <label for="fundAvgNAV">Average NAV (₹)</label>
+            <input type="number" id="fundAvgNAV" required min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="fundCurrentNAV">Current NAV (₹)</label>
+            <input type="number" id="fundCurrentNAV" required min="0" step="0.01">
+          </div>
+          <div class="form-actions">
+            <button type="button" onclick="hideAddMutualFundModal()">Cancel</button>
+            <button type="submit">Add Mutual Fund</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.style.display = 'block';
+}
+
+function hideAddMutualFundModal() {
+  const modal = document.getElementById('addMutualFundModal');
+  if (modal) {
+    modal.remove();
+  }
+}
+
+// Add stock function
+async function addStock(event) {
+  event.preventDefault();
+  
+  const symbol = document.getElementById('stockSymbol').value.trim().toUpperCase();
+  const company = document.getElementById('stockCompany').value.trim();
+  const quantity = parseInt(document.getElementById('stockQuantity').value);
+  const avgPrice = parseFloat(document.getElementById('stockAvgPrice').value);
+  const currentPrice = parseFloat(document.getElementById('stockCurrentPrice').value);
+  
+  if (!symbol || !company || !quantity || !avgPrice || !currentPrice) {
+    alert('Please fill all fields');
+    return;
+  }
+  
+  const session = getCurrentSession();
+  if (!session) {
+    alert('Please login first');
+    return;
+  }
+  
+  await loadUserData();
+  const user = getUserData(session.email);
+  if (!user) return;
+  
+  // Initialize portfolio if needed
+  if (!user.portfolio) {
+    user.portfolio = { stocks: [], mutualFunds: [] };
+  }
+  if (!user.portfolio.stocks) {
+    user.portfolio.stocks = [];
+  }
+  
+  // Add stock
+  user.portfolio.stocks.push({
+    symbol,
+    company,
+    quantity,
+    avgPrice,
+    currentPrice
+  });
+  
+  await setUserData(session.email, user);
+  hideAddStockModal();
+  loadUserPortfolio(session.email);
+  alert('Stock added successfully!');
+}
+
+// Add mutual fund function
+async function addMutualFund(event) {
+  event.preventDefault();
+  
+  const scheme = document.getElementById('fundScheme').value.trim();
+  const fundName = document.getElementById('fundName').value.trim();
+  const units = parseFloat(document.getElementById('fundUnits').value);
+  const avgNAV = parseFloat(document.getElementById('fundAvgNAV').value);
+  const currentNAV = parseFloat(document.getElementById('fundCurrentNAV').value);
+  
+  if (!scheme || !fundName || !units || !avgNAV || !currentNAV) {
+    alert('Please fill all fields');
+    return;
+  }
+  
+  const session = getCurrentSession();
+  if (!session) {
+    alert('Please login first');
+    return;
+  }
+  
+  await loadUserData();
+  const user = getUserData(session.email);
+  if (!user) return;
+  
+  // Initialize portfolio if needed
+  if (!user.portfolio) {
+    user.portfolio = { stocks: [], mutualFunds: [] };
+  }
+  if (!user.portfolio.mutualFunds) {
+    user.portfolio.mutualFunds = [];
+  }
+  
+  // Add mutual fund
+  user.portfolio.mutualFunds.push({
+    scheme,
+    fundName,
+    units,
+    avgNAV,
+    currentNAV
+  });
+  
+  await setUserData(session.email, user);
+  hideAddMutualFundModal();
+  loadUserPortfolio(session.email);
+  alert('Mutual fund added successfully!');
+}
+
+// Edit functions (placeholder)
+function editStock(index) {
+  alert(`Edit stock at index ${index} - Feature coming soon!`);
+}
+
+function editMutualFund(index) {
+  alert(`Edit mutual fund at index ${index} - Feature coming soon!`);
+}
+
+// Delete functions
+async function deleteStock(index) {
+  if (!confirm('Are you sure you want to delete this stock?')) return;
+  
+  const session = getCurrentSession();
+  if (!session) return;
+  
+  await loadUserData();
+  const user = getUserData(session.email);
+  if (!user || !user.portfolio || !user.portfolio.stocks) return;
+  
+  user.portfolio.stocks.splice(index, 1);
+  await setUserData(session.email, user);
+  loadUserPortfolio(session.email);
+  alert('Stock deleted successfully!');
+}
+
+async function deleteMutualFund(index) {
+  if (!confirm('Are you sure you want to delete this mutual fund?')) return;
+  
+  const session = getCurrentSession();
+  if (!session) return;
+  
+  await loadUserData();
+  const user = getUserData(session.email);
+  if (!user || !user.portfolio || !user.portfolio.mutualFunds) return;
+  
+  user.portfolio.mutualFunds.splice(index, 1);
+  await setUserData(session.email, user);
+  loadUserPortfolio(session.email);
+  alert('Mutual fund deleted successfully!');
 }
 
 // Initialize when page loads
