@@ -237,7 +237,7 @@ function setupKeyboardNavigation() {
   // Profile dropdown keyboard support
   document.addEventListener("keydown", function (e) {
     const profileIcon = document.querySelector(".profile-icon");
-    const dropdown = document.querySelector(".profile-dropdown");
+    const dropdown = document.querySelector(".dropdown");
 
     // Escape key to close dropdown
     if (e.key === "Escape" && dropdown && dropdown.style.display === "block") {
@@ -308,7 +308,7 @@ function setupKeyboardNavigation() {
 
 // Profile dropdown toggle function
 function toggleProfileMenu() {
-  const dropdown = document.querySelector(".profile-dropdown");
+  const dropdown = document.querySelector(".dropdown");
   if (dropdown) {
     const currentDisplay = dropdown.style.display;
     dropdown.style.display = currentDisplay === "block" ? "none" : "block";
@@ -318,7 +318,7 @@ function toggleProfileMenu() {
 // Profile settings function
 async function showProfileSettings() {
   // Hide profile dropdown
-  const dropdown = document.querySelector(".profile-dropdown");
+  const dropdown = document.querySelector(".dropdown");
   if (dropdown) dropdown.style.display = "none";
 
   // Hide other sections
@@ -638,9 +638,11 @@ function toggleProfileDropdown() {
   if (dropdown.style.display === "none" || dropdown.style.display === "") {
     dropdown.style.display = "block";
     button.classList.add("open");
+    button.setAttribute("aria-expanded", "true");
   } else {
     dropdown.style.display = "none";
     button.classList.remove("open");
+    button.setAttribute("aria-expanded", "false");
   }
 }
 
@@ -746,7 +748,7 @@ function cancelFieldEdit() {
 
   // Reset dropdown button text to default
   if (dropdownButton) {
-    dropdownButton.textContent = "Select details to edit";
+    dropdownButton.textContent = "Select detail to update";
   }
 
   // Clear form
@@ -962,7 +964,7 @@ async function logout() {
   updateHeaderProfile();
 
   // Hide profile dropdown
-  const dropdown = document.querySelector(".profile-dropdown");
+  const dropdown = document.querySelector(".dropdown");
   if (dropdown) dropdown.style.display = "none";
 }
 
@@ -996,7 +998,7 @@ function updateHeaderProfile() {
 // Close dropdown when clicking outside
 document.addEventListener("click", function (event) {
   const headerProfile = document.querySelector(".header-profile");
-  const dropdown = document.querySelector(".profile-dropdown");
+  const dropdown = document.querySelector(".dropdown");
 
   if (headerProfile && dropdown && !headerProfile.contains(event.target)) {
     dropdown.style.display = "none";
@@ -2241,7 +2243,7 @@ function loadMutualFundsTable(mutualFunds) {
 
 // Modal functions for adding investments
 function showAddStockModal() {
-  // Create and show modal - you can customize this based on your modal implementation
+  // Create and show modal with enhanced design
   const modal = document.createElement("div");
   modal.className = "modal";
   modal.id = "addStockModal";
@@ -2254,28 +2256,40 @@ function showAddStockModal() {
       <div class="modal-body">
         <form id="stockForm" onsubmit="addStock(event)">
           <div class="form-group">
-            <label for="stockSymbol">Symbol</label>
-            <input type="text" id="stockSymbol" required placeholder="e.g., RELIANCE">
+            <label for="stockExchange">Exchange</label>
+            <select id="stockExchange" required class="form-select">
+              <option value="">Select Stock Exchange</option>
+              <option value="NSE">NSE</option>
+              <option value="BSE">BSE</option>
+            </select>
           </div>
+          
           <div class="form-group">
-            <label for="stockCompany">Company</label>
-            <input type="text" id="stockCompany" required placeholder="e.g., Reliance Industries Ltd">
+            <label for="stockSymbol">Stock Symbol</label>
+            <input type="text" id="stockSymbol" required placeholder="Search for stocks..." class="search-input">
           </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="stockQuantity">Quantity</label>
+              <input type="number" id="stockQuantity" required min="1" placeholder="0" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="stockPurchasePrice">Purchase Price</label>
+              <input type="number" id="stockPurchasePrice" required min="0" step="0.01" placeholder="0.00" class="form-input">
+            </div>
+          </div>
+          
           <div class="form-group">
-            <label for="stockQuantity">Quantity</label>
-            <input type="number" id="stockQuantity" required min="1">
+            <label for="stockPurchaseDate">Purchase Date</label>
+            <input type="date" id="stockPurchaseDate" required class="form-input" value="${
+              new Date().toISOString().split("T")[0]
+            }">
           </div>
-          <div class="form-group">
-            <label for="stockAvgPrice">Average Price (₹)</label>
-            <input type="number" id="stockAvgPrice" required min="0" step="0.01">
-          </div>
-          <div class="form-group">
-            <label for="stockCurrentPrice">Current Price (₹)</label>
-            <input type="number" id="stockCurrentPrice" required min="0" step="0.01">
-          </div>
+          
           <div class="form-actions">
-            <button type="button" onclick="hideAddStockModal()">Cancel</button>
-            <button type="submit">Add Stock</button>
+            <button type="button" class="cancel-btn" onclick="hideAddStockModal()">Cancel</button>
+            <button type="submit" class="submit-btn">Add Stock</button>
           </div>
         </form>
       </div>
@@ -2283,6 +2297,11 @@ function showAddStockModal() {
   `;
   document.body.appendChild(modal);
   modal.style.display = "block";
+
+  // Set focus to the first input
+  setTimeout(() => {
+    document.getElementById("stockExchange").focus();
+  }, 100);
 }
 
 function hideAddStockModal() {
@@ -2305,28 +2324,36 @@ function showAddMutualFundModal() {
       <div class="modal-body">
         <form id="mutualFundForm" onsubmit="addMutualFund(event)">
           <div class="form-group">
-            <label for="fundScheme">Scheme Code</label>
-            <input type="text" id="fundScheme" required placeholder="e.g., 120503">
+            <label for="fundScheme">Mutual Fund Scheme</label>
+            <input type="text" id="fundScheme" required placeholder="Search for mutual funds..." class="search-input">
           </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fundUnits">Units</label>
+              <input type="number" id="fundUnits" required min="0" step="0.001" placeholder="0.000" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="fundPurchaseNAV">Purchase NAV</label>
+              <input type="number" id="fundPurchaseNAV" required min="0" step="0.01" placeholder="0.00" class="form-input">
+            </div>
+          </div>
+          
           <div class="form-group">
-            <label for="fundName">Fund Name</label>
-            <input type="text" id="fundName" required placeholder="e.g., SBI Large & Midcap Fund">
+            <label for="fundInvestmentAmount">Investment Amount</label>
+            <input type="number" id="fundInvestmentAmount" required min="0" step="0.01" placeholder="0.00" class="form-input">
           </div>
+          
           <div class="form-group">
-            <label for="fundUnits">Units</label>
-            <input type="number" id="fundUnits" required min="0" step="0.001">
+            <label for="fundPurchaseDate">Purchase Date</label>
+            <input type="date" id="fundPurchaseDate" required class="form-input" value="${
+              new Date().toISOString().split("T")[0]
+            }">
           </div>
-          <div class="form-group">
-            <label for="fundAvgNAV">Average NAV (₹)</label>
-            <input type="number" id="fundAvgNAV" required min="0" step="0.01">
-          </div>
-          <div class="form-group">
-            <label for="fundCurrentNAV">Current NAV (₹)</label>
-            <input type="number" id="fundCurrentNAV" required min="0" step="0.01">
-          </div>
+          
           <div class="form-actions">
-            <button type="button" onclick="hideAddMutualFundModal()">Cancel</button>
-            <button type="submit">Add Mutual Fund</button>
+            <button type="button" class="cancel-btn" onclick="hideAddMutualFundModal()">Cancel</button>
+            <button type="submit" class="submit-btn">Add Mutual Fund</button>
           </div>
         </form>
       </div>
@@ -2334,6 +2361,11 @@ function showAddMutualFundModal() {
   `;
   document.body.appendChild(modal);
   modal.style.display = "block";
+
+  // Set focus to the first input
+  setTimeout(() => {
+    document.getElementById("fundScheme").focus();
+  }, 100);
 }
 
 function hideAddMutualFundModal() {
@@ -2351,14 +2383,14 @@ async function addStock(event) {
     .getElementById("stockSymbol")
     .value.trim()
     .toUpperCase();
-  const company = document.getElementById("stockCompany").value.trim();
+  const exchange = document.getElementById("stockExchange").value;
   const quantity = parseInt(document.getElementById("stockQuantity").value);
-  const avgPrice = parseFloat(document.getElementById("stockAvgPrice").value);
-  const currentPrice = parseFloat(
-    document.getElementById("stockCurrentPrice").value
+  const purchasePrice = parseFloat(
+    document.getElementById("stockPurchasePrice").value
   );
+  const purchaseDate = document.getElementById("stockPurchaseDate").value;
 
-  if (!symbol || !company || !quantity || !avgPrice || !currentPrice) {
+  if (!symbol || !exchange || !quantity || !purchasePrice || !purchaseDate) {
     alert("Please fill all fields");
     return;
   }
@@ -2381,13 +2413,16 @@ async function addStock(event) {
     user.portfolio.stocks = [];
   }
 
-  // Add stock
+  // Add stock with new fields
   user.portfolio.stocks.push({
     symbol,
-    company,
+    company: symbol, // Will be updated when API integration is added
+    exchange,
     quantity,
-    avgPrice,
-    currentPrice,
+    avgPrice: purchasePrice,
+    currentPrice: purchasePrice, // Initially same as purchase price
+    purchaseDate,
+    purchasePrice,
   });
 
   await setUserData(session.email, user);
@@ -2401,14 +2436,16 @@ async function addMutualFund(event) {
   event.preventDefault();
 
   const scheme = document.getElementById("fundScheme").value.trim();
-  const fundName = document.getElementById("fundName").value.trim();
   const units = parseFloat(document.getElementById("fundUnits").value);
-  const avgNAV = parseFloat(document.getElementById("fundAvgNAV").value);
-  const currentNAV = parseFloat(
-    document.getElementById("fundCurrentNAV").value
+  const purchaseNAV = parseFloat(
+    document.getElementById("fundPurchaseNAV").value
   );
+  const investmentAmount = parseFloat(
+    document.getElementById("fundInvestmentAmount").value
+  );
+  const purchaseDate = document.getElementById("fundPurchaseDate").value;
 
-  if (!scheme || !fundName || !units || !avgNAV || !currentNAV) {
+  if (!scheme || !units || !purchaseNAV || !investmentAmount || !purchaseDate) {
     alert("Please fill all fields");
     return;
   }
@@ -2434,10 +2471,11 @@ async function addMutualFund(event) {
   // Add mutual fund
   user.portfolio.mutualFunds.push({
     scheme,
-    fundName,
     units,
-    avgNAV,
-    currentNAV,
+    purchaseNAV,
+    investmentAmount,
+    purchaseDate,
+    dateAdded: new Date().toISOString(),
   });
 
   await setUserData(session.email, user);

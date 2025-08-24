@@ -102,11 +102,7 @@
               />
             </svg>
           </div>
-          <div
-            class="profile-dropdown"
-            id="profileDropdown"
-            style="display: none"
-          >
+          <div class="dropdown" id="profileDropdown" style="display: none">
             <div class="profile-info">
               <div class="profile-name" id="profileName">User Name</div>
               <div class="profile-email" id="profileEmail">user@email.com</div>
@@ -286,11 +282,7 @@
               <polyline points="6,9 12,15 18,9"></polyline>
             </svg>
           </button>
-          <div
-            class="profile-dropdown"
-            id="profileDropdownMenu"
-            style="display: none"
-          >
+          <div class="dropdown" id="profileDropdownMenu" style="display: none">
             <div
               class="profile-menu-item"
               onclick="selectDropdownOption('Name'); showEditField('name');"
@@ -378,15 +370,15 @@
           </div>
 
           <div class="edit-field-buttons">
-            <button type="button" class="update-btn" onclick="saveFieldEdit()">
-              Update
-            </button>
             <button
               type="button"
               class="cancel-btn"
               onclick="cancelFieldEdit()"
             >
               Cancel
+            </button>
+            <button type="button" class="update-btn" onclick="saveFieldEdit()">
+              Update
             </button>
           </div>
         </div>

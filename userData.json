@@ -3,16 +3,25 @@
     "admin@mail.com": {
       "fullName": "Admin",
       "email": "admin@mail.com",
-      "password": "Admin@1234s"
+      "password": "Admin@1234s",
+      "portfolio": {
+        "value": 0,
+        "dailyChange": 0,
+        "totalGain": 0,
+        "transactions": [],
+        "holdings": [],
+        "stocks": [],
+        "mutualFunds": []
+      }
     }
   },
   "sessions": {
     "currentUser": {
       "name": "Admin",
       "email": "admin@mail.com",
-      "currentPage": "dashboard"
+      "currentPage": "profile-settings"
     },
     "isLoggedIn": true,
-    "currentPage": "dashboard"
+    "currentPage": "profile-settings"
   }
 }
