@@ -524,6 +524,15 @@ section {
   margin-bottom: var(--spacing-md);
 }
 
+/* No data message styling */
+.no-data {
+  color: var(--text-color-light);
+  font-style: italic;
+  text-align: center;
+  padding: var(--spacing-lg);
+  font-size: var(--font-md);
+}
+
 .input-field {
   width: 100%;
   padding: 16px 20px;

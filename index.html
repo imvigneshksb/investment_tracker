@@ -420,17 +420,17 @@
           <div class="summary-cards">
             <div class="data-card">
               <h3>Portfolio Value</h3>
-              <p class="value">$125,430</p>
+              <p class="value" id="portfolioValue">$0</p>
             </div>
 
             <div class="data-card">
               <h3>Daily Change</h3>
-              <p class="value positive">+$2,340</p>
+              <p class="value" id="dailyChange">$0</p>
             </div>
 
             <div class="data-card">
               <h3>Total Gain</h3>
-              <p class="value positive">+18.7%</p>
+              <p class="value" id="totalGain">0%</p>
             </div>
           </div>
         </section>
@@ -457,22 +457,9 @@
         <section class="transactions-section">
           <h2 class="section-title">Recent Transactions</h2>
           <div class="dashboard-card">
-            <div class="transaction-list">
-              <div class="transaction-item">
-                <span class="stock">AAPL</span>
-                <span class="action buy">BUY</span>
-                <span class="amount">$1,250</span>
-              </div>
-              <div class="transaction-item">
-                <span class="stock">TSLA</span>
-                <span class="action sell">SELL</span>
-                <span class="amount">$850</span>
-              </div>
-              <div class="transaction-item">
-                <span class="stock">MSFT</span>
-                <span class="action buy">BUY</span>
-                <span class="amount">$2,100</span>
-              </div>
+            <div class="transaction-list" id="transactionList">
+              <!-- Transactions will be loaded dynamically -->
+              <div class="no-data">No transactions yet</div>
             </div>
           </div>
         </section>
@@ -481,23 +468,9 @@
         <section class="holdings-section">
           <h2 class="section-title">Top Holdings</h2>
           <div class="dashboard-card">
-            <div class="holdings-list">
-              <div class="holding-item">
-                <span class="symbol">AAPL</span>
-                <span class="percentage">32.5%</span>
-              </div>
-              <div class="holding-item">
-                <span class="symbol">MSFT</span>
-                <span class="percentage">28.3%</span>
-              </div>
-              <div class="holding-item">
-                <span class="symbol">TSLA</span>
-                <span class="percentage">15.2%</span>
-              </div>
-              <div class="holding-item">
-                <span class="symbol">NVDA</span>
-                <span class="percentage">12.8%</span>
-              </div>
+            <div class="holdings-list" id="holdingsList">
+              <!-- Holdings will be loaded dynamically -->
+              <div class="no-data">No holdings yet</div>
             </div>
           </div>
         </section>
@@ -506,19 +479,9 @@
         <section class="market-section">
           <h2 class="section-title">Market Summary</h2>
           <div class="dashboard-card">
-            <div class="market-stats">
-              <div class="stat-item">
-                <span class="label">S&P 500</span>
-                <span class="value positive">+1.2%</span>
-              </div>
-              <div class="stat-item">
-                <span class="label">NASDAQ</span>
-                <span class="value positive">+0.8%</span>
-              </div>
-              <div class="stat-item">
-                <span class="label">DOW</span>
-                <span class="value negative">-0.3%</span>
-              </div>
+            <div class="market-stats" id="marketStats">
+              <!-- Market data removed - offline mode -->
+              <div class="no-data">Market data not available in offline mode</div>
             </div>
           </div>
         </section>
