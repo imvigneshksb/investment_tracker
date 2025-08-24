@@ -1,6 +1,90 @@
 // Storage utility functions for userData.json management
 let userData = { users: {}, sessions: {}, appSettings: {} };
 
+// ============================
+// BUTTON STATE MANAGEMENT
+// ============================
+
+/**
+ * Reset button to default state by removing focus and active states
+ * @param {HTMLElement|string} button - Button element or selector
+ */
+function resetButtonState(button) {
+  const btnElement =
+    typeof button === "string" ? document.querySelector(button) : button;
+  if (btnElement) {
+    // Remove focus and blur the button
+    btnElement.blur();
+
+    // Remove any active/pressed states
+    btnElement.classList.remove("active", "pressed", "btn-loading");
+
+    // Reset any inline styles that might persist (removed transform since we don't use it)
+    btnElement.style.boxShadow = "";
+
+    // Remove any temporary disabled state
+    if (!btnElement.hasAttribute("data-originally-disabled")) {
+      btnElement.disabled = false;
+    }
+  }
+}
+
+/**
+ * Reset all buttons in a container to default state
+ * @param {HTMLElement|string} container - Container element or selector
+ */
+function resetAllButtonStates(container = document) {
+  const containerElement =
+    typeof container === "string"
+      ? document.querySelector(container)
+      : container;
+  if (containerElement) {
+    const buttons = containerElement.querySelectorAll(".btn-primary, button");
+    buttons.forEach((button) => resetButtonState(button));
+  }
+}
+
+/**
+ * Add loading state to button
+ * @param {HTMLElement|string} button - Button element or selector
+ * @param {string} loadingText - Optional loading text
+ */
+function setButtonLoading(button, loadingText = "") {
+  const btnElement =
+    typeof button === "string" ? document.querySelector(button) : button;
+  if (btnElement) {
+    btnElement.classList.add("btn-loading");
+    if (loadingText) {
+      btnElement.setAttribute("data-original-text", btnElement.textContent);
+      btnElement.textContent = loadingText;
+    }
+    btnElement.disabled = true;
+  }
+}
+
+/**
+ * Remove loading state from button
+ * @param {HTMLElement|string} button - Button element or selector
+ */
+function removeButtonLoading(button) {
+  const btnElement =
+    typeof button === "string" ? document.querySelector(button) : button;
+  if (btnElement) {
+    btnElement.classList.remove("btn-loading");
+    const originalText = btnElement.getAttribute("data-original-text");
+    if (originalText) {
+      btnElement.textContent = originalText;
+      btnElement.removeAttribute("data-original-text");
+    }
+    btnElement.disabled = false;
+    resetButtonState(btnElement);
+  }
+}
+
+// ============================
+// END BUTTON STATE MANAGEMENT
+// ============================
+
 // Load userData from JSON file via server API
 async function loadUserData() {
   try {
@@ -2185,60 +2269,78 @@ function fixAutocompleteColors() {
 
 // Authentication Functions
 async function handleLogin() {
-  // Clear previous errors
-  clearAllErrors();
+  // Get login button and set loading state
+  const loginBtn = document.querySelector(".login-btn");
+  setButtonLoading(loginBtn, "Logging in...");
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  try {
+    // Clear previous errors
+    clearAllErrors();
 
-  let hasErrors = false;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-  // Validate email
-  if (!email.trim()) {
-    showError("loginEmailError", "Email is required");
-    hasErrors = true;
-  } else if (!isValidEmail(email.trim())) {
-    showError("loginEmailError", "Please enter a valid email address");
-    hasErrors = true;
+    let hasErrors = false;
+
+    // Validate email
+    if (!email.trim()) {
+      showError("loginEmailError", "Email is required");
+      hasErrors = true;
+    } else if (!isValidEmail(email.trim())) {
+      showError("loginEmailError", "Please enter a valid email address");
+      hasErrors = true;
+    }
+
+    // Validate password
+    if (!password.trim()) {
+      showError("loginPasswordError", "Password is required");
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      removeButtonLoading(loginBtn);
+      return;
+    }
+
+    // Check if user exists (simplified validation)
+    const userData = getUserData(email);
+    if (!userData) {
+      showError("loginEmailError", "User not found");
+      removeButtonLoading(loginBtn);
+      return;
+    }
+
+    if (userData.password !== password) {
+      showError("loginPasswordError", "Incorrect password");
+      removeButtonLoading(loginBtn);
+      return;
+    }
+
+    // Store user session
+    await setCurrentSession({
+      name: userData.fullName,
+      email: email,
+      currentPage: "dashboard",
+    });
+
+    // Update header profile visibility
+    updateHeaderProfile();
+
+    // Show dashboard and hide login
+    showDashboard(email);
+
+    // Clear fields
+    clearLoginFields();
+
+    // Reset button state after successful login
+    setTimeout(() => {
+      removeButtonLoading(loginBtn);
+      resetButtonState(loginBtn);
+    }, 100);
+  } catch (error) {
+    console.error("Login error:", error);
+    removeButtonLoading(loginBtn);
   }
-
-  // Validate password
-  if (!password.trim()) {
-    showError("loginPasswordError", "Password is required");
-    hasErrors = true;
-  }
-
-  if (hasErrors) {
-    return;
-  }
-
-  // Check if user exists (simplified validation)
-  const userData = getUserData(email);
-  if (!userData) {
-    showError("loginEmailError", "User not found");
-    return;
-  }
-
-  if (userData.password !== password) {
-    showError("loginPasswordError", "Incorrect password");
-    return;
-  }
-
-  // Store user session
-  await setCurrentSession({
-    name: userData.fullName,
-    email: email,
-    currentPage: "dashboard",
-  });
-
-  // Update header profile visibility
-  updateHeaderProfile();
-
-  // Show dashboard and hide login
-  showDashboard(email);
-
-  // Clear fields
-  clearLoginFields();
 }
 
 // Email validation helper
@@ -2248,98 +2350,114 @@ function isValidEmail(email) {
 }
 
 async function handleSignup() {
-  // Clear previous errors
-  clearAllErrors();
+  // Get signup button and set loading state
+  const signupBtn = document.querySelector(".signup-btn");
+  setButtonLoading(signupBtn, "Creating Account...");
 
-  const fullName = document.getElementById("fullName").value;
-  const email = document.getElementById("signupEmail").value;
-  const password = document.getElementById("signupPassword").value;
-  const confirmPassword = document.getElementById("confirmPassword").value;
+  try {
+    // Clear previous errors
+    clearAllErrors();
 
-  let hasErrors = false;
+    const fullName = document.getElementById("fullName").value;
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
 
-  // Validate full name
-  if (!fullName.trim()) {
-    showError("fullNameError", "Full name is required");
-    hasErrors = true;
-  } else if (fullName.trim().length < 2) {
-    showError("fullNameError", "Full name must be at least 2 characters");
-    hasErrors = true;
-  }
+    let hasErrors = false;
 
-  // Validate email
-  if (!email.trim()) {
-    showError("signupEmailError", "Email is required");
-    hasErrors = true;
-  } else if (!isValidEmail(email.trim())) {
-    showError("signupEmailError", "Please enter a valid email address");
-    hasErrors = true;
-  } else {
-    // Check if email already exists
-    const existingUser = getUserData(email);
-    if (existingUser) {
-      showError("signupEmailError", "Email already registered");
+    // Validate full name
+    if (!fullName.trim()) {
+      showError("fullNameError", "Full name is required");
+      hasErrors = true;
+    } else if (fullName.trim().length < 2) {
+      showError("fullNameError", "Full name must be at least 2 characters");
       hasErrors = true;
     }
+
+    // Validate email
+    if (!email.trim()) {
+      showError("signupEmailError", "Email is required");
+      hasErrors = true;
+    } else if (!isValidEmail(email.trim())) {
+      showError("signupEmailError", "Please enter a valid email address");
+      hasErrors = true;
+    } else {
+      // Check if email already exists
+      const existingUser = getUserData(email);
+      if (existingUser) {
+        showError("signupEmailError", "Email already registered");
+        hasErrors = true;
+      }
+    }
+
+    // Validate password
+    if (!password.trim()) {
+      showError("signupPasswordError", "Password is required");
+      hasErrors = true;
+    } else if (password.length < 6) {
+      showError(
+        "signupPasswordError",
+        "Password must be at least 6 characters long"
+      );
+      hasErrors = true;
+    }
+
+    // Validate confirm password
+    if (!confirmPassword.trim()) {
+      showError("confirmPasswordError", "Please confirm your password");
+      hasErrors = true;
+    } else if (password !== confirmPassword) {
+      showError("confirmPasswordError", "Passwords do not match");
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      removeButtonLoading(signupBtn);
+      return;
+    }
+
+    // Store user data (in real app, this would be sent to server)
+    const userData = {
+      fullName: fullName,
+      email: email,
+      password: password, // In real app, this would be hashed
+      portfolio: {
+        value: 0,
+        dailyChange: 0,
+        totalGain: 0,
+        transactions: [],
+        holdings: [],
+      },
+    };
+
+    // Use email as username since we removed username field
+    const username = email;
+    await setUserData(username, userData);
+
+    await setCurrentSession({
+      name: fullName,
+      email: email,
+      currentPage: "dashboard",
+    });
+
+    // Update header profile visibility
+    updateHeaderProfile();
+
+    // Show dashboard and hide signup
+    showDashboard(username);
+
+    // Clear fields
+    clearSignupFields();
+
+    // Reset button state after successful signup
+    setTimeout(() => {
+      removeButtonLoading(signupBtn);
+      resetButtonState(signupBtn);
+    }, 100);
+  } catch (error) {
+    console.error("Signup error:", error);
+    removeButtonLoading(signupBtn);
   }
-
-  // Validate password
-  if (!password.trim()) {
-    showError("signupPasswordError", "Password is required");
-    hasErrors = true;
-  } else if (password.length < 6) {
-    showError(
-      "signupPasswordError",
-      "Password must be at least 6 characters long"
-    );
-    hasErrors = true;
-  }
-
-  // Validate confirm password
-  if (!confirmPassword.trim()) {
-    showError("confirmPasswordError", "Please confirm your password");
-    hasErrors = true;
-  } else if (password !== confirmPassword) {
-    showError("confirmPasswordError", "Passwords do not match");
-    hasErrors = true;
-  }
-
-  if (hasErrors) {
-    return;
-  }
-
-  // Store user data (in real app, this would be sent to server)
-  const userData = {
-    fullName: fullName,
-    email: email,
-    password: password, // In real app, this would be hashed
-    portfolio: {
-      value: 0,
-      dailyChange: 0,
-      totalGain: 0,
-      transactions: [],
-      holdings: [],
-    },
-  };
-
-  // Use email as username since we removed username field
-  const username = email;
-  await setUserData(username, userData);
-
-  await setCurrentSession({
-    name: fullName,
-    email: email,
-    currentPage: "dashboard",
-  });
-
-  // Update header profile visibility
-  updateHeaderProfile();
-
-  // Show dashboard and hide signup
-  showDashboard(username);
-
-  // Clear fields
-  clearSignupFields();
 }
 
 async function showLogin() {
@@ -3063,8 +3181,8 @@ function showAddStockModal() {
           </div>
           
           <div class="form-actions">
-            <button type="button" class="cancel-btn" onclick="hideAddStockModal()">Cancel</button>
-            <button type="submit" class="submit-btn">Add Stock</button>
+            <button type="button" class="btn-secondary" onclick="hideAddStockModal()">Cancel</button>
+            <button type="submit" class="btn-primary submit-btn">Add Stock</button>
           </div>
         </form>
       </div>
@@ -3098,6 +3216,9 @@ function showAddStockModal() {
 function hideAddStockModal() {
   const modal = document.getElementById("addStockModal");
   if (modal) {
+    // Reset all button states in the modal before removing
+    resetAllButtonStates(modal);
+
     modal.remove();
 
     // Unfreeze the main window
@@ -3109,7 +3230,7 @@ function hideAddStockModal() {
 
       // Remove focus outline after a short delay to prevent persistent focus styles
       setTimeout(() => {
-        modalTriggerElement.blur();
+        resetButtonState(modalTriggerElement);
         modalTriggerElement = null;
       }, 100);
     }
@@ -3160,8 +3281,8 @@ function showAddMutualFundModal() {
           </div>
           
           <div class="form-actions">
-            <button type="button" class="cancel-btn" onclick="hideAddMutualFundModal()">Cancel</button>
-            <button type="submit" class="submit-btn">Add Mutual Fund</button>
+            <button type="button" class="btn-secondary" onclick="hideAddMutualFundModal()">Cancel</button>
+            <button type="submit" class="btn-primary submit-btn">Add Mutual Fund</button>
           </div>
         </form>
       </div>
@@ -3192,6 +3313,9 @@ function showAddMutualFundModal() {
 function hideAddMutualFundModal() {
   const modal = document.getElementById("addMutualFundModal");
   if (modal) {
+    // Reset all button states in the modal before removing
+    resetAllButtonStates(modal);
+
     modal.remove();
 
     // Unfreeze the main window
@@ -3203,7 +3327,7 @@ function hideAddMutualFundModal() {
 
       // Remove focus outline after a short delay to prevent persistent focus styles
       setTimeout(() => {
-        modalTriggerElement.blur();
+        resetButtonState(modalTriggerElement);
         modalTriggerElement = null;
       }, 100);
     }
@@ -3214,109 +3338,155 @@ function hideAddMutualFundModal() {
 async function addStock(event) {
   event.preventDefault();
 
-  const symbol = document
-    .getElementById("stockSymbol")
-    .value.trim()
-    .toUpperCase();
-  const exchange = document.getElementById("stockExchange").value;
-  const quantity = parseInt(document.getElementById("stockQuantity").value);
-  const purchasePrice = parseFloat(
-    document.getElementById("stockPurchasePrice").value
-  );
-  const purchaseDate = document.getElementById("stockPurchaseDate").value;
+  // Get submit button and set loading state
+  const submitBtn = event.target.querySelector(".submit-btn");
+  setButtonLoading(submitBtn, "Adding Stock...");
 
-  if (!symbol || !exchange || !quantity || !purchasePrice || !purchaseDate) {
-    alert("Please fill all fields");
-    return;
+  try {
+    const symbol = document
+      .getElementById("stockSymbol")
+      .value.trim()
+      .toUpperCase();
+    const exchange = document.getElementById("stockExchange").value;
+    const quantity = parseInt(document.getElementById("stockQuantity").value);
+    const purchasePrice = parseFloat(
+      document.getElementById("stockPurchasePrice").value
+    );
+    const purchaseDate = document.getElementById("stockPurchaseDate").value;
+
+    if (!symbol || !exchange || !quantity || !purchasePrice || !purchaseDate) {
+      alert("Please fill all fields");
+      removeButtonLoading(submitBtn);
+      return;
+    }
+
+    const session = getCurrentSession();
+    if (!session) {
+      alert("Please login first");
+      removeButtonLoading(submitBtn);
+      return;
+    }
+
+    await loadUserData();
+    const user = getUserData(session.email);
+    if (!user) {
+      removeButtonLoading(submitBtn);
+      return;
+    }
+
+    // Initialize portfolio if needed
+    if (!user.portfolio) {
+      user.portfolio = { stocks: [], mutualFunds: [] };
+    }
+    if (!user.portfolio.stocks) {
+      user.portfolio.stocks = [];
+    }
+
+    // Add stock with new fields
+    user.portfolio.stocks.push({
+      symbol,
+      company: symbol, // Will be updated when API integration is added
+      exchange,
+      quantity,
+      avgPrice: purchasePrice,
+      currentPrice: purchasePrice, // Initially same as purchase price
+      purchaseDate,
+      purchasePrice,
+    });
+
+    await setUserData(session.email, user);
+
+    // Reset button state before hiding modal
+    removeButtonLoading(submitBtn);
+    resetButtonState(submitBtn);
+
+    hideAddStockModal();
+    loadUserPortfolio(session.email);
+    alert("Stock added successfully!");
+  } catch (error) {
+    console.error("Add stock error:", error);
+    removeButtonLoading(submitBtn);
+    alert("Error adding stock. Please try again.");
   }
-
-  const session = getCurrentSession();
-  if (!session) {
-    alert("Please login first");
-    return;
-  }
-
-  await loadUserData();
-  const user = getUserData(session.email);
-  if (!user) return;
-
-  // Initialize portfolio if needed
-  if (!user.portfolio) {
-    user.portfolio = { stocks: [], mutualFunds: [] };
-  }
-  if (!user.portfolio.stocks) {
-    user.portfolio.stocks = [];
-  }
-
-  // Add stock with new fields
-  user.portfolio.stocks.push({
-    symbol,
-    company: symbol, // Will be updated when API integration is added
-    exchange,
-    quantity,
-    avgPrice: purchasePrice,
-    currentPrice: purchasePrice, // Initially same as purchase price
-    purchaseDate,
-    purchasePrice,
-  });
-
-  await setUserData(session.email, user);
-  hideAddStockModal();
-  loadUserPortfolio(session.email);
-  alert("Stock added successfully!");
 }
 
 // Add mutual fund function
 async function addMutualFund(event) {
   event.preventDefault();
 
-  const scheme = document.getElementById("fundScheme").value.trim();
-  const units = parseFloat(document.getElementById("fundUnits").value);
-  const purchaseNAV = parseFloat(
-    document.getElementById("fundPurchaseNAV").value
-  );
-  const investmentAmount = parseFloat(
-    document.getElementById("fundInvestmentAmount").value
-  );
-  const purchaseDate = document.getElementById("fundPurchaseDate").value;
+  // Get submit button and set loading state
+  const submitBtn = event.target.querySelector(".submit-btn");
+  setButtonLoading(submitBtn, "Adding Mutual Fund...");
 
-  if (!scheme || !units || !purchaseNAV || !investmentAmount || !purchaseDate) {
-    alert("Please fill all fields");
-    return;
+  try {
+    const scheme = document.getElementById("fundScheme").value.trim();
+    const units = parseFloat(document.getElementById("fundUnits").value);
+    const purchaseNAV = parseFloat(
+      document.getElementById("fundPurchaseNAV").value
+    );
+    const investmentAmount = parseFloat(
+      document.getElementById("fundInvestmentAmount").value
+    );
+    const purchaseDate = document.getElementById("fundPurchaseDate").value;
+
+    if (
+      !scheme ||
+      !units ||
+      !purchaseNAV ||
+      !investmentAmount ||
+      !purchaseDate
+    ) {
+      alert("Please fill all fields");
+      removeButtonLoading(submitBtn);
+      return;
+    }
+
+    const session = getCurrentSession();
+    if (!session) {
+      alert("Please login first");
+      removeButtonLoading(submitBtn);
+      return;
+    }
+
+    await loadUserData();
+    const user = getUserData(session.email);
+    if (!user) {
+      removeButtonLoading(submitBtn);
+      return;
+    }
+
+    // Initialize portfolio if needed
+    if (!user.portfolio) {
+      user.portfolio = { stocks: [], mutualFunds: [] };
+    }
+    if (!user.portfolio.mutualFunds) {
+      user.portfolio.mutualFunds = [];
+    }
+
+    // Add mutual fund
+    user.portfolio.mutualFunds.push({
+      scheme,
+      units,
+      purchaseNAV,
+      investmentAmount,
+      purchaseDate,
+      dateAdded: new Date().toISOString(),
+    });
+
+    await setUserData(session.email, user);
+
+    // Reset button state before hiding modal
+    removeButtonLoading(submitBtn);
+    resetButtonState(submitBtn);
+
+    hideAddMutualFundModal();
+    loadUserPortfolio(session.email);
+    alert("Mutual fund added successfully!");
+  } catch (error) {
+    console.error("Add mutual fund error:", error);
+    removeButtonLoading(submitBtn);
+    alert("Error adding mutual fund. Please try again.");
   }
-
-  const session = getCurrentSession();
-  if (!session) {
-    alert("Please login first");
-    return;
-  }
-
-  await loadUserData();
-  const user = getUserData(session.email);
-  if (!user) return;
-
-  // Initialize portfolio if needed
-  if (!user.portfolio) {
-    user.portfolio = { stocks: [], mutualFunds: [] };
-  }
-  if (!user.portfolio.mutualFunds) {
-    user.portfolio.mutualFunds = [];
-  }
-
-  // Add mutual fund
-  user.portfolio.mutualFunds.push({
-    scheme,
-    units,
-    purchaseNAV,
-    investmentAmount,
-    purchaseDate,
-    dateAdded: new Date().toISOString(),
-  });
-
-  await setUserData(session.email, user);
-  hideAddMutualFundModal();
-  loadUserPortfolio(session.email);
-  alert("Mutual fund added successfully!");
 }
 
 // Edit functions (placeholder)

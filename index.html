@@ -196,7 +196,9 @@
             <div class="error-message" id="loginPasswordError"></div>
           </div>
 
-          <button class="login-btn" onclick="handleLogin()">Login</button>
+          <button class="btn-primary login-btn" onclick="handleLogin()">
+            Login
+          </button>
         </div>
 
         <div class="signup-link">
@@ -251,7 +253,9 @@
             <div class="error-message" id="confirmPasswordError"></div>
           </div>
 
-          <button class="signup-btn" onclick="handleSignup()">Sign Up</button>
+          <button class="btn-primary signup-btn" onclick="handleSignup()">
+            Sign Up
+          </button>
         </div>
 
         <div class="login-link">
@@ -383,12 +387,16 @@
           <div class="edit-field-buttons">
             <button
               type="button"
-              class="cancel-btn"
+              class="btn-secondary"
               onclick="cancelFieldEdit()"
             >
               Cancel
             </button>
-            <button type="button" class="update-btn" onclick="saveFieldEdit()">
+            <button
+              type="button"
+              class="btn-primary update-btn"
+              onclick="saveFieldEdit()"
+            >
               Update
             </button>
           </div>
@@ -397,7 +405,7 @@
         <div class="profile-settings-buttons" style="margin-top: 20px">
           <button
             type="button"
-            class="back-to-dashboard"
+            class="btn-primary back-to-dashboard"
             onclick="cancelProfileSettings()"
           >
             Back to Dashboard
@@ -475,7 +483,11 @@
           <div class="holdings-category">
             <div class="category-header">
               <h3 class="category-title">Stocks</h3>
-              <button class="add-category-btn" onclick="showAddStockModal()">
+              <button
+                class="btn-primary add-category-btn btn-small btn-auto-width"
+                onclick="showAddStockModal()"
+              >
+                >
                 <svg
                   width="16"
                   height="16"
@@ -518,7 +530,7 @@
             <div class="category-header">
               <h3 class="category-title">Mutual Funds</h3>
               <button
-                class="add-category-btn"
+                class="btn-primary add-category-btn btn-small btn-auto-width"
                 onclick="showAddMutualFundModal()"
               >
                 <svg

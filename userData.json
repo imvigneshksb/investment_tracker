@@ -10,7 +10,18 @@
         "totalGain": 0,
         "transactions": [],
         "holdings": [],
-        "stocks": [],
+        "stocks": [
+          {
+            "symbol": "12",
+            "company": "12",
+            "exchange": "BSE",
+            "quantity": 1212,
+            "avgPrice": 12,
+            "currentPrice": 12,
+            "purchaseDate": "2025-08-24",
+            "purchasePrice": 12
+          }
+        ],
         "mutualFunds": []
       }
     }
