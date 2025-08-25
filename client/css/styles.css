@@ -239,12 +239,6 @@
   background-color: var(--success-hover);
 }
 
-/* Loading state with spinner */
-.btn-primary.btn-loading {
-  pointer-events: none;
-  position: relative;
-}
-
 .btn-primary.btn-loading::after {
   content: "";
   position: absolute;
@@ -253,16 +247,6 @@
   border: 2px solid transparent;
   border-top: 2px solid currentColor;
   border-radius: 50%;
-  animation: btn-spin 1s linear infinite;
-}
-
-@keyframes btn-spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 /* ============================
@@ -435,7 +419,6 @@
   border: 2px solid transparent;
   border-top: 2px solid currentColor;
   border-radius: 50%;
-  animation: btn-spin 1s linear infinite;
 }
 
 /* ============================
