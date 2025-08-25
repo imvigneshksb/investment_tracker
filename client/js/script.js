@@ -1,5 +1,6 @@
 // Storage utility functions for userData.json management
 let userData = { users: {}, sessions: {}, appSettings: {} };
+let currentUser = null; // Current authenticated user from server
 
 // ============================
 // BUTTON STATE MANAGEMENT
@@ -90,31 +91,33 @@ async function loadUserData() {
   try {
     // Check authentication status first
     const authResponse = await fetch("/api/auth/verify", {
-      credentials: 'include'
+      credentials: "include",
     });
-    
+
     if (!authResponse.ok) {
       // User not authenticated, redirect to login
-      if (window.location.pathname !== '/login.html' && 
-          window.location.pathname !== '/signup.html' &&
-          window.location.pathname !== '/index.html') {
-        window.location.href = 'login.html';
+      if (
+        window.location.pathname !== "/login.html" &&
+        window.location.pathname !== "/signup.html" &&
+        window.location.pathname !== "/index.html"
+      ) {
+        window.location.href = "login.html";
         return;
       }
-      
+
       // Initialize empty userData for login/signup pages
       userData = { users: {}, sessions: {}, appSettings: {} };
       return;
     }
-    
+
     const authData = await authResponse.json();
     currentUser = authData.user;
-    
+
     // Load portfolio data from server
     const response = await fetch("/api/loadUserData", {
-      credentials: 'include'
+      credentials: "include",
     });
-    
+
     if (response.ok) {
       const portfolioData = await response.json();
       // Structure the data properly for the app
@@ -122,28 +125,32 @@ async function loadUserData() {
         users: {
           [currentUser.email]: {
             ...currentUser,
-            portfolio: portfolioData
-          }
+            portfolio: portfolioData,
+          },
         },
         sessions: {},
-        appSettings: {}
+        appSettings: {},
       };
       console.log("✅ User portfolio loaded from secure server");
+
+      // Update header profile with current user info
+      updateHeaderProfile();
     } else {
       throw new Error("Failed to load portfolio data");
     }
-    
   } catch (error) {
     console.error("Error loading user data:", error);
-    
+
     // If not on login/signup pages, redirect to login
-    if (window.location.pathname !== '/login.html' && 
-        window.location.pathname !== '/signup.html' &&
-        window.location.pathname !== '/index.html') {
-      window.location.href = 'login.html';
+    if (
+      window.location.pathname !== "/login.html" &&
+      window.location.pathname !== "/signup.html" &&
+      window.location.pathname !== "/index.html"
+    ) {
+      window.location.href = "login.html";
       return;
     }
-    
+
     // Initialize empty userData for login/signup pages
     userData = { users: {}, sessions: {}, appSettings: {} };
   }
@@ -155,20 +162,20 @@ async function saveUserData() {
     if (!currentUser) {
       throw new Error("User not authenticated");
     }
-    
+
     // Extract portfolio data to save
     const portfolioData = userData.users[currentUser.email]?.portfolio || {
       stocks: [],
       totalValue: 0,
       totalInvestment: 0,
       profit: 0,
-      profitPercentage: 0
+      profitPercentage: 0,
     };
 
     const response = await fetch("/api/saveUserData", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify(portfolioData),
     });
 
@@ -180,7 +187,10 @@ async function saveUserData() {
     }
   } catch (error) {
     console.error("❌ Error saving portfolio data:", error);
-    showNotification("Failed to save portfolio data. Please try again.", "error");
+    showNotification(
+      "Failed to save portfolio data. Please try again.",
+      "error"
+    );
   }
 }
 
@@ -1135,7 +1145,7 @@ async function deleteAccount() {
     // Call server to delete user account
     const deleteResponse = await fetch("/api/auth/delete-account", {
       method: "DELETE",
-      credentials: 'include'
+      credentials: "include",
     });
 
     if (!deleteResponse.ok) {
@@ -1982,7 +1992,7 @@ async function logout() {
     // Call secure logout endpoint
     const response = await fetch("/api/auth/logout", {
       method: "POST",
-      credentials: 'include'
+      credentials: "include",
     });
 
     if (response.ok) {
@@ -2003,16 +2013,60 @@ async function logout() {
   window.location.href = "login.html";
 }
 
+// Initialize user authentication and profile on page load
+async function initializeUserAuth() {
+  try {
+    // Check authentication status
+    const response = await fetch("/api/auth/verify", {
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      const authData = await response.json();
+      currentUser = authData.user;
+      console.log("✅ User authenticated:", currentUser.email);
+
+      // Update header profile
+      updateHeaderProfile();
+
+      return true; // User is authenticated
+    } else {
+      currentUser = null;
+      updateHeaderProfile();
+      return false; // User not authenticated
+    }
+  } catch (error) {
+    console.error("Error checking authentication:", error);
+    currentUser = null;
+    updateHeaderProfile();
+    return false;
+  }
+}
+
+// Call this when DOM is loaded
+document.addEventListener("DOMContentLoaded", async function () {
+  // Initialize authentication state
+  await initializeUserAuth();
+
+  // Load user data if authenticated
+  if (currentUser) {
+    await loadUserData();
+  }
+});
+
 // Update header profile visibility and info
 function updateHeaderProfile() {
-  const currentSession = getCurrentSession();
   const profileIcon = document.querySelector(".profile-icon");
 
+  console.log("🔄 Updating header profile, currentUser:", currentUser);
+
   if (!profileIcon) {
+    console.log("⚠️ Profile icon element not found");
     return;
   }
 
-  if (currentSession) {
+  if (currentUser) {
+    console.log("✅ Showing profile icon for user:", currentUser.email);
     profileIcon.classList.add("show");
 
     // Update profile info in dropdown
@@ -2020,12 +2074,15 @@ function updateHeaderProfile() {
     const profileEmail = document.querySelector(".profile-email");
 
     if (profileName) {
-      profileName.textContent = currentSession.name;
+      profileName.textContent = currentUser.name;
+      console.log("📝 Updated profile name:", currentUser.name);
     }
     if (profileEmail) {
-      profileEmail.textContent = currentSession.email;
+      profileEmail.textContent = currentUser.email;
+      console.log("📧 Updated profile email:", currentUser.email);
     }
   } else {
+    console.log("❌ Hiding profile icon - no currentUser");
     profileIcon.classList.remove("show");
   }
 }
@@ -2507,7 +2564,7 @@ async function handleLogin() {
     const response = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify({ email: email.trim(), password }),
     });
 
@@ -2516,10 +2573,12 @@ async function handleLogin() {
     if (response.ok) {
       // Login successful
       currentUser = result.user;
+      console.log("✅ Login successful for user:", currentUser.email);
+      updateHeaderProfile(); // Update header immediately after login
       showNotification("Login successful! Welcome back.", "success");
-      
+
       // Redirect to dashboard
-      window.location.href = 'dashboard.html';
+      window.location.href = "dashboard.html";
     } else {
       // Login failed
       if (result.error === "Invalid credentials") {
@@ -2531,10 +2590,12 @@ async function handleLogin() {
 
     // Reset button state
     removeButtonLoading(loginBtn);
-
   } catch (error) {
     console.error("Login error:", error);
-    showError("loginEmailError", "Network error. Please check your connection.");
+    showError(
+      "loginEmailError",
+      "Network error. Please check your connection."
+    );
     removeButtonLoading(loginBtn);
   }
 }
@@ -2609,11 +2670,11 @@ async function handleSignup() {
     const response = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: 'include',
-      body: JSON.stringify({ 
-        name: fullName.trim(), 
-        email: email.trim(), 
-        password 
+      credentials: "include",
+      body: JSON.stringify({
+        name: fullName.trim(),
+        email: email.trim(),
+        password,
       }),
     });
 
@@ -2622,10 +2683,12 @@ async function handleSignup() {
     if (response.ok) {
       // Registration successful
       currentUser = result.user;
+      console.log("✅ Registration successful for user:", currentUser.email);
+      updateHeaderProfile(); // Update header immediately after signup
       showNotification("Account created successfully! Welcome!", "success");
-      
+
       // Redirect to dashboard
-      window.location.href = 'dashboard.html';
+      window.location.href = "dashboard.html";
     } else {
       // Registration failed
       if (result.error === "User already exists") {
@@ -2637,10 +2700,12 @@ async function handleSignup() {
 
     // Reset button state
     removeButtonLoading(signupBtn);
-
   } catch (error) {
     console.error("Signup error:", error);
-    showError("signupEmailError", "Network error. Please check your connection.");
+    showError(
+      "signupEmailError",
+      "Network error. Please check your connection."
+    );
     removeButtonLoading(signupBtn);
   }
 }
