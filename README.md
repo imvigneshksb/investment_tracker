@@ -16,34 +16,32 @@ A modern, responsive HTML-based investment tracking website with offline-first d
 - **Single Column Layout**: Clean, linear flow of information
 - **No External Dependencies**: Removed all external API dependencies for improved reliability
 
+## 📁 Project Structure
+
+```
+investment_tracker/
+├── client/                    # 🎯 Production-ready deployment folder
+│   ├── index.html            # Main application
+│   ├── userData.json         # User data storage
+│   ├── css/
+│   │   └── styles.css        # All styling
+│   ├── js/
+│   │   └── script.js         # All JavaScript functionality
+│   └── README.md             # Client documentation
+├── server.js                 # Node.js server (optional)
+├── DEPLOYMENT.md             # Deployment guide
+└── README.md                 # This file
+```
+
 ## 🌐 Deployment Options
 
 ### 🎯 Zoho Catalyst (Recommended for Production)
 
 **Ready for Zoho Catalyst free tier deployment!**
 
-1. **Install Zoho CLI**:
-
-   ```bash
-   npm install -g @zohocorp/cli
-   ```
-
-2. **Login to Zoho**:
-
-   ```bash
-   zcli auth login
-   ```
-
-3. **Initialize and Deploy**:
-
-   ```bash
-   cd investment-tracker
-   zcli init
-   zcli deploy
-   ```
-
-4. **Access your app**:
-   - Your app will be available at: `https://your-app-name-<project-id>.catalyst.zoho.com`
+1. **Upload the `client` folder contents** to Zoho Catalyst
+2. **Set `index.html` as entry point**
+3. **Deploy using Zoho CLI or Web Console**
 
 📖 **Detailed deployment guide**: See `DEPLOYMENT.md`
 
@@ -100,9 +98,10 @@ A modern, responsive HTML-based investment tracking website with offline-first d
 
 ### Option 2: Python Server
 
-1. **Start Python server**:
+1. **Start Python server** (from client folder):
 
    ```bash
+   cd client
    # Python 3
    python -m http.server 8080
 
@@ -115,9 +114,10 @@ A modern, responsive HTML-based investment tracking website with offline-first d
 
 ### Option 3: PHP Server
 
-1. **Start PHP server** (requires PHP installed):
+1. **Start PHP server** (from client folder):
 
    ```bash
+   cd client
    php -S localhost:8080
    ```
 
@@ -127,29 +127,11 @@ A modern, responsive HTML-based investment tracking website with offline-first d
 ### Option 4: Direct File Access
 
 1. **Open directly in browser**:
-   - Simply double-click `index.html`
-   - Or drag and drop the file into your browser
+   - Navigate to the `client` folder
+   - Double-click `index.html`
+   - Or drag and drop the `client/index.html` file into your browser
 
-## 📁 Project Structure
-
-```
-investment_tracker/
-├── index.html              # Main HTML file
-├── styles.css              # CSS styles with theme support
-├── script.js               # JavaScript functionality
-├── app.js                  # Express server for Zoho Catalyst
-├── server.js               # Legacy Node.js local server
-├── package.json            # Project configuration
-├── catalyst.json           # Zoho Catalyst configuration
-├── .catalystrc             # Zoho Catalyst settings
-├── Procfile                # Process configuration
-├── DEPLOYMENT.md           # Zoho Catalyst deployment guide
-├── start-server.bat        # Windows startup script
-├── start-server.sh         # Linux/macOS startup script
-└── README.md              # This documentation
-```
-
-## 🔌 API Endpoints
+## API Endpoints
 
 When using the Express server (`app.js`), the following API endpoints are available:
 
