@@ -211,12 +211,15 @@
   background-color: var(--danger-color);
 }
 
-.btn-primary.btn-danger:hover,
-.btn-primary.btn-danger:focus {
+/* Danger Button Hover State */
+.btn-primary.btn-danger:hover {
   background-color: var(--danger-hover);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
 }
 
-/* Danger button focus state with red outline and shadow */
+/* Danger Button Focus State */
 .btn-primary.btn-danger:focus,
 .btn-primary.btn-danger:focus-visible {
   background-color: var(--danger-hover);
@@ -225,13 +228,21 @@
   box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
 }
 
-/* Danger button active state with red-tinted inset shadow */
+/* Danger Button Active State */
 .btn-primary.btn-danger:active {
   background-color: var(--danger-hover);
-  box-shadow: inset 0 2px 4px rgba(220, 53, 69, 0.3);
   transform: translateY(1px);
   transition: background-color 0.1s ease, box-shadow 0.1s ease,
     transform 0.1s ease;
+}
+
+/* Danger Button Disabled State */
+.btn-primary.btn-danger:disabled,
+.btn-primary.btn-danger.disabled {
+  background-color: var(--text-color-muted);
+  color: var(--text-color-placeholder);
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* Success variant */
@@ -385,32 +396,46 @@
   border-color: var(--danger-color);
 }
 
-.btn-secondary.btn-danger:hover,
-.btn-secondary.btn-danger:focus {
+/* Secondary Danger Button Hover State */
+.btn-secondary.btn-danger:hover {
   background-color: var(--danger-bg);
   border-color: var(--danger-hover);
   color: var(--danger-text);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
 }
 
-/* Secondary danger button focus state with red outline and shadow */
+/* Secondary Danger Button Focus State */
 .btn-secondary.btn-danger:focus,
 .btn-secondary.btn-danger:focus-visible {
   background-color: var(--danger-bg);
   border-color: var(--danger-hover);
   color: var(--danger-text);
-  outline: none;
+  outline: 2px solid var(--danger-color);
+  outline-offset: 2px;
   box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
 }
 
-/* Secondary danger button active state */
+/* Secondary Danger Button Active State */
 .btn-secondary.btn-danger:active {
   background-color: var(--danger-bg);
   border-color: var(--danger-hover);
   color: var(--danger-text);
-  box-shadow: inset 0 2px 4px rgba(220, 53, 69, 0.2);
   transform: translateY(1px);
   transition: background-color 0.1s ease, border-color 0.1s ease,
     box-shadow 0.1s ease, transform 0.1s ease;
+  box-shadow: inset 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+/* Secondary Danger Button Disabled State */
+.btn-secondary.btn-danger:disabled,
+.btn-secondary.btn-danger.disabled {
+  background-color: transparent;
+  color: var(--text-color-muted);
+  border-color: var(--text-color-muted);
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* Success variant for secondary */
@@ -2234,13 +2259,16 @@ body.modal-open {
   outline: none;
 }
 
+/* Modal Close Button Hover State */
 .modal-header .close:hover {
   background-color: var(--button-bg);
   color: var(--button-text);
   box-shadow: var(--shadow-medium);
-  transform: translateY(-1px);
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
 }
 
+/* Modal Close Button Focus State */
 .modal-header .close:focus,
 .modal-header .close:focus-visible {
   background-color: var(--button-bg);
@@ -2250,13 +2278,22 @@ body.modal-open {
   box-shadow: var(--focus-shadow);
 }
 
+/* Modal Close Button Active State */
 .modal-header .close:active {
   background-color: var(--button-hover);
   color: var(--button-text);
-  box-shadow: var(--shadow-inset);
   transform: translateY(1px);
   transition: background-color 0.1s ease, box-shadow 0.1s ease,
     transform 0.1s ease;
+}
+
+/* Modal Close Button Disabled State */
+.modal-header .close:disabled,
+.modal-header .close.disabled {
+  background-color: var(--text-color-muted);
+  color: var(--text-color-placeholder);
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 .modal-body {
