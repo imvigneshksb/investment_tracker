@@ -973,6 +973,154 @@ async function cancelProfileSettings() {
   showDashboard();
 }
 
+// Show delete account confirmation modal
+function confirmDeleteAccount() {
+  // Store the element that triggered the modal for focus restoration
+  modalTriggerElement = document.activeElement;
+
+  // Create and show confirmation modal
+  const modal = document.createElement("div");
+  modal.className = "modal";
+  modal.id = "deleteAccountModal";
+  modal.innerHTML = `
+    <div class="modal-content" role="dialog" aria-labelledby="deleteModalTitle" aria-modal="true">
+      <div class="modal-header">
+        <h3 id="deleteModalTitle">Delete Account</h3>
+        <span class="close" onclick="hideDeleteAccountModal()" aria-label="Close modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="delete-confirmation-content">
+          <div class="warning-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div class="warning-text">
+            <p><strong>Are you sure you want to delete your account?</strong></p>
+            <p>This action cannot be undone and will permanently delete:</p>
+            <ul>
+              <li>All your stock investments</li>
+              <li>All your mutual fund investments</li>
+              <li>Your profile information</li>
+              <li>All financial data and history</li>
+            </ul>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-primary btn-danger" onclick="proceedWithDeleteAccount()">Delete Account</button>
+          <button type="button" class="btn-secondary" onclick="hideDeleteAccountModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Show the modal
+  modal.style.display = "block";
+
+  // Freeze the main window
+  freezeMainWindow();
+
+  // Add escape key handler specifically for this modal
+  const escapeHandler = function (e) {
+    if (e.key === "Escape") {
+      hideDeleteAccountModal();
+      document.removeEventListener("keydown", escapeHandler);
+    }
+  };
+  document.addEventListener("keydown", escapeHandler);
+
+  // Add slight delay to ensure smooth modal appearance
+  setTimeout(() => {
+    const modalContent = modal.querySelector(".modal-content");
+    modalContent.focus();
+
+    // Setup modal focus trap
+    setupModalFocusTrap(modal);
+  }, 100);
+}
+
+// Hide delete account confirmation modal
+function hideDeleteAccountModal() {
+  const modal = document.getElementById("deleteAccountModal");
+  if (modal) {
+    // Reset all button states in the modal before removing
+    resetAllButtonStates(modal);
+
+    modal.remove();
+
+    // Unfreeze the main window
+    unfreezeMainWindow();
+
+    // Restore focus to the element that opened the modal, then blur after a short delay
+    if (modalTriggerElement) {
+      modalTriggerElement.focus();
+
+      // Remove focus outline after a short delay to prevent persistent focus styles
+      setTimeout(() => {
+        resetButtonState(modalTriggerElement);
+        modalTriggerElement = null;
+      }, 100);
+    }
+  }
+}
+
+// Proceed with account deletion after confirmation
+async function proceedWithDeleteAccount() {
+  // Hide the modal first
+  hideDeleteAccountModal();
+
+  // Execute the delete account function
+  await deleteAccount();
+}
+
+// Delete account function
+async function deleteAccount() {
+  try {
+    const currentSession = getCurrentSession();
+    if (!currentSession) {
+      showErrorNotification("User session not found");
+      return;
+    }
+
+    // Remove the user data from userData.json (cloud/server)
+    await removeUserData(currentSession.email);
+
+    // Clear all session data from userData.json (cloud/server)
+    await clearCurrentSession();
+
+    // Clear all localStorage backup data
+    localStorage.removeItem("userData_backup");
+    localStorage.removeItem("currentSession");
+
+    // Clear any other session-related localStorage items
+    const keys = Object.keys(localStorage);
+    keys.forEach((key) => {
+      if (
+        key.includes("session") ||
+        key.includes("user") ||
+        key.includes("login")
+      ) {
+        localStorage.removeItem(key);
+      }
+    });
+
+    // Show single success message
+    showSuccessNotification("Account deleted successfully.");
+
+    // Redirect to login page after a short delay to allow user to see the message
+    setTimeout(() => {
+      location.reload();
+    }, 2000);
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    showErrorNotification("Failed to delete account. Please try again.");
+  }
+}
+
 // Edit Name function
 async function editName() {
   const currentSession = getCurrentSession();
@@ -1204,6 +1352,9 @@ function selectStockExchangeOption(optionValue) {
   if (hiddenInput) {
     hiddenInput.value = optionValue;
   }
+
+  // Hide error when selection is made
+  hideStockModalError("stockExchangeError");
 
   // Close dropdown
   if (dropdown) {
@@ -1524,6 +1675,8 @@ function setupModalFocusTrap(modal) {
         hideAddStockModal();
       } else if (modalId === "addMutualFundModal") {
         hideAddMutualFundModal();
+      } else if (modalId === "deleteAccountModal") {
+        hideDeleteAccountModal();
       }
     }
   });
@@ -1536,6 +1689,8 @@ function setupModalFocusTrap(modal) {
         hideAddStockModal();
       } else if (modalId === "addMutualFundModal") {
         hideAddMutualFundModal();
+      } else if (modalId === "deleteAccountModal") {
+        hideDeleteAccountModal();
       }
     }
   });
@@ -3127,7 +3282,7 @@ function showAddStockModal() {
         <span class="close" onclick="hideAddStockModal()" aria-label="Close modal">&times;</span>
       </div>
       <div class="modal-body">
-        <form id="stockForm" onsubmit="addStock(event)">
+        <form id="stockForm" onsubmit="addStock(event)" novalidate>
           <div class="form-group">
             <label for="stockExchange">Exchange</label>
             <div class="stock-exchange-dropdown-container">
@@ -3147,34 +3302,37 @@ function showAddStockModal() {
               </div>
             </div>
             <input type="hidden" id="stockExchange" name="stockExchange" required>
+            <div class="error-message" id="stockExchangeError"></div>
           </div>
           
           <div class="form-group">
             <label for="stockSymbol">Stock Symbol</label>
             <input type="text" id="stockSymbol" required placeholder="Search for stocks..." class="input-field">
+            <div class="error-message" id="stockSymbolError"></div>
           </div>
           
           <div class="form-row">
             <div class="form-group">
               <label for="stockQuantity">Quantity</label>
               <input type="number" id="stockQuantity" required min="1" placeholder="0" class="input-field">
+              <div class="error-message" id="stockQuantityError"></div>
             </div>
             <div class="form-group">
               <label for="stockPurchasePrice">Purchase Price</label>
               <input type="number" id="stockPurchasePrice" required min="0" step="0.01" placeholder="0.00" class="input-field">
+              <div class="error-message" id="stockPurchasePriceError"></div>
             </div>
           </div>
           
           <div class="form-group">
             <label for="stockPurchaseDate">Purchase Date</label>
-            <input type="date" id="stockPurchaseDate" required class="input-field" value="${
-              new Date().toISOString().split("T")[0]
-            }">
+            <input type="date" id="stockPurchaseDate" required class="input-field" placeholder="DD-MM-YYYY">
+            <div class="error-message" id="stockPurchaseDateError"></div>
           </div>
           
           <div class="form-actions">
-            <button type="button" class="btn-secondary" onclick="hideAddStockModal()">Cancel</button>
             <button type="submit" class="btn-primary submit-btn">Add Stock</button>
+            <button type="button" class="btn-secondary" onclick="hideAddStockModal()">Cancel</button>
           </div>
         </form>
       </div>
@@ -3185,6 +3343,9 @@ function showAddStockModal() {
 
   // Freeze the main window
   freezeMainWindow();
+
+  // Setup input error handling for stock modal
+  setupStockModalErrorHandling();
 
   // Setup keyboard accessibility for stock exchange dropdown
   setupStockExchangeDropdownAccessibility();
@@ -3203,6 +3364,126 @@ function showAddStockModal() {
     // Setup modal focus trap
     setupModalFocusTrap(modal);
   }, 100);
+}
+
+// Setup input event listeners for stock modal to hide errors on interaction
+function setupStockModalErrorHandling() {
+  const stockModalInputMappings = [
+    { inputId: "stockSymbol", errorId: "stockSymbolError" },
+    { inputId: "stockQuantity", errorId: "stockQuantityError" },
+    { inputId: "stockPurchasePrice", errorId: "stockPurchasePriceError" },
+    { inputId: "stockPurchaseDate", errorId: "stockPurchaseDateError" },
+  ];
+
+  stockModalInputMappings.forEach((mapping) => {
+    const inputElement = document.getElementById(mapping.inputId);
+    if (inputElement) {
+      // Hide error on input (typing)
+      inputElement.addEventListener("input", function () {
+        hideStockModalError(mapping.errorId);
+      });
+
+      // Hide error on blur (focus change) if field has content
+      inputElement.addEventListener("blur", function () {
+        if (this.value.trim()) {
+          hideStockModalError(mapping.errorId);
+        }
+      });
+    }
+  });
+
+  // Special handling for stock exchange dropdown
+  const stockExchangeButton = document.querySelector(
+    ".stock-exchange-dropdown-button"
+  );
+  if (stockExchangeButton) {
+    stockExchangeButton.addEventListener("click", function () {
+      hideStockModalError("stockExchangeError");
+    });
+  }
+}
+
+// Show error in stock modal
+function showStockModalError(errorId, message) {
+  const errorElement = document.getElementById(errorId);
+  if (errorElement) {
+    errorElement.textContent = message;
+    errorElement.classList.add("show");
+  }
+}
+
+// Hide error in stock modal
+function hideStockModalError(errorId) {
+  const errorElement = document.getElementById(errorId);
+  if (errorElement) {
+    errorElement.textContent = "";
+    errorElement.classList.remove("show");
+  }
+}
+
+// Clear all errors in stock modal
+function clearAllStockModalErrors() {
+  const stockModalErrors = [
+    "stockExchangeError",
+    "stockSymbolError",
+    "stockQuantityError",
+    "stockPurchasePriceError",
+    "stockPurchaseDateError",
+  ];
+  stockModalErrors.forEach((errorId) => {
+    hideStockModalError(errorId);
+  });
+}
+
+// Mutual Fund Modal Error Handling Functions
+function setupMutualFundModalErrorHandling() {
+  const fundModalInputs = [
+    { id: "fundScheme", errorId: "fundSchemeError" },
+    { id: "fundUnits", errorId: "fundUnitsError" },
+    { id: "fundPurchaseNAV", errorId: "fundPurchaseNAVError" },
+    { id: "fundInvestmentAmount", errorId: "fundInvestmentAmountError" },
+    { id: "fundPurchaseDate", errorId: "fundPurchaseDateError" },
+  ];
+
+  fundModalInputs.forEach(({ id, errorId }) => {
+    const input = document.getElementById(id);
+    if (input) {
+      input.addEventListener("input", () => hideMutualFundModalError(errorId));
+      input.addEventListener("blur", () => hideMutualFundModalError(errorId));
+    }
+  });
+}
+
+// Show error in mutual fund modal
+function showMutualFundModalError(errorId, message) {
+  const errorElement = document.getElementById(errorId);
+  if (errorElement) {
+    errorElement.textContent = message;
+    errorElement.classList.add("show");
+  }
+}
+
+// Hide error in mutual fund modal
+function hideMutualFundModalError(errorId) {
+  const errorElement = document.getElementById(errorId);
+  if (errorElement) {
+    errorElement.textContent = "";
+    errorElement.classList.remove("show");
+  }
+}
+
+// Clear all mutual fund modal errors
+function clearAllMutualFundModalErrors() {
+  const mutualFundModalErrors = [
+    "fundSchemeError",
+    "fundUnitsError",
+    "fundPurchaseNAVError",
+    "fundInvestmentAmountError",
+    "fundPurchaseDateError",
+  ];
+  mutualFundModalErrors.forEach((errorId) => {
+    hideMutualFundModalError(errorId);
+  });
 }
 
 function hideAddStockModal() {
@@ -3243,38 +3524,41 @@ function showAddMutualFundModal() {
         <span class="close" onclick="hideAddMutualFundModal()" aria-label="Close modal">&times;</span>
       </div>
       <div class="modal-body">
-        <form id="mutualFundForm" onsubmit="addMutualFund(event)">
+        <form id="mutualFundForm" onsubmit="addMutualFund(event)" novalidate>
           <div class="form-group">
             <label for="fundScheme">Mutual Fund Scheme</label>
             <input type="text" id="fundScheme" required placeholder="Search for mutual funds..." class="input-field">
+            <div class="error-message" id="fundSchemeError"></div>
           </div>
           
           <div class="form-row">
             <div class="form-group">
               <label for="fundUnits">Units</label>
               <input type="number" id="fundUnits" required min="0" step="0.001" placeholder="0.000" class="input-field">
+              <div class="error-message" id="fundUnitsError"></div>
             </div>
             <div class="form-group">
               <label for="fundPurchaseNAV">Purchase NAV</label>
               <input type="number" id="fundPurchaseNAV" required min="0" step="0.01" placeholder="0.00" class="input-field">
+              <div class="error-message" id="fundPurchaseNAVError"></div>
             </div>
           </div>
           
           <div class="form-group">
             <label for="fundInvestmentAmount">Investment Amount</label>
             <input type="number" id="fundInvestmentAmount" required min="0" step="0.01" placeholder="0.00" class="input-field">
+            <div class="error-message" id="fundInvestmentAmountError"></div>
           </div>
           
           <div class="form-group">
             <label for="fundPurchaseDate">Purchase Date</label>
-            <input type="date" id="fundPurchaseDate" required class="input-field" value="${
-              new Date().toISOString().split("T")[0]
-            }">
+            <input type="date" id="fundPurchaseDate" required class="input-field" placeholder="DD-MM-YYYY">
+            <div class="error-message" id="fundPurchaseDateError"></div>
           </div>
           
           <div class="form-actions">
-            <button type="button" class="btn-secondary" onclick="hideAddMutualFundModal()">Cancel</button>
             <button type="submit" class="btn-primary submit-btn">Add Mutual Fund</button>
+            <button type="button" class="btn-secondary" onclick="hideAddMutualFundModal()">Cancel</button>
           </div>
         </form>
       </div>
@@ -3285,6 +3569,9 @@ function showAddMutualFundModal() {
 
   // Freeze the main window
   freezeMainWindow();
+
+  // Setup input error handling for mutual fund modal
+  setupMutualFundModalErrorHandling();
 
   // Set focus to the modal and first focusable element
   setTimeout(() => {
@@ -3330,6 +3617,9 @@ function hideAddMutualFundModal() {
 async function addStock(event) {
   event.preventDefault();
 
+  // Clear any existing errors
+  clearAllStockModalErrors();
+
   // Get submit button and set loading state
   const submitBtn = event.target.querySelector(".submit-btn");
   setButtonLoading(submitBtn, "Adding Stock...");
@@ -3346,15 +3636,64 @@ async function addStock(event) {
     );
     const purchaseDate = document.getElementById("stockPurchaseDate").value;
 
-    if (!symbol || !exchange || !quantity || !purchasePrice || !purchaseDate) {
-      alert("Please fill all fields");
+    let hasErrors = false;
+
+    // Validate stock exchange (required field)
+    if (!exchange) {
+      showStockModalError(
+        "stockExchangeError",
+        "Please select a stock exchange"
+      );
+      hasErrors = true;
+    }
+
+    // Validate stock symbol
+    if (!symbol) {
+      showStockModalError("stockSymbolError", "Stock symbol is required");
+      hasErrors = true;
+    } else if (symbol.length < 1) {
+      showStockModalError(
+        "stockSymbolError",
+        "Please enter a valid stock symbol"
+      );
+      hasErrors = true;
+    }
+
+    // Validate quantity
+    if (!quantity || quantity <= 0) {
+      showStockModalError(
+        "stockQuantityError",
+        "Quantity must be greater than 0"
+      );
+      hasErrors = true;
+    }
+
+    // Validate purchase price
+    if (!purchasePrice || purchasePrice <= 0) {
+      showStockModalError(
+        "stockPurchasePriceError",
+        "Purchase price must be greater than 0"
+      );
+      hasErrors = true;
+    }
+
+    // Validate purchase date
+    if (!purchaseDate) {
+      showStockModalError(
+        "stockPurchaseDateError",
+        "Purchase date is required"
+      );
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
       removeButtonLoading(submitBtn);
       return;
     }
 
     const session = getCurrentSession();
     if (!session) {
-      alert("Please login first");
+      showStockModalError("stockSymbolError", "Please login first");
       removeButtonLoading(submitBtn);
       return;
     }
@@ -3362,6 +3701,7 @@ async function addStock(event) {
     await loadUserData();
     const user = getUserData(session.email);
     if (!user) {
+      showStockModalError("stockSymbolError", "User data not found");
       removeButtonLoading(submitBtn);
       return;
     }
@@ -3394,17 +3734,23 @@ async function addStock(event) {
 
     hideAddStockModal();
     loadUserPortfolio(session.email);
-    alert("Stock added successfully!");
+    showSuccessNotification("Stock added successfully!");
   } catch (error) {
     console.error("Add stock error:", error);
     removeButtonLoading(submitBtn);
-    alert("Error adding stock. Please try again.");
+    showStockModalError(
+      "stockSymbolError",
+      "Error adding stock. Please try again."
+    );
   }
 }
 
 // Add mutual fund function
 async function addMutualFund(event) {
   event.preventDefault();
+
+  // Clear any existing errors
+  clearAllMutualFundModalErrors();
 
   // Get submit button and set loading state
   const submitBtn = event.target.querySelector(".submit-btn");
@@ -3421,21 +3767,68 @@ async function addMutualFund(event) {
     );
     const purchaseDate = document.getElementById("fundPurchaseDate").value;
 
-    if (
-      !scheme ||
-      !units ||
-      !purchaseNAV ||
-      !investmentAmount ||
-      !purchaseDate
-    ) {
-      alert("Please fill all fields");
+    let hasErrors = false;
+
+    // Validate mutual fund scheme
+    if (!scheme) {
+      showMutualFundModalError(
+        "fundSchemeError",
+        "Mutual fund scheme is required"
+      );
+      hasErrors = true;
+    } else if (scheme.length < 2) {
+      showMutualFundModalError(
+        "fundSchemeError",
+        "Please enter a valid mutual fund scheme"
+      );
+      hasErrors = true;
+    }
+
+    // Validate units
+    if (!units || units <= 0) {
+      showMutualFundModalError(
+        "fundUnitsError",
+        "Units must be greater than 0"
+      );
+      hasErrors = true;
+    }
+
+    // Validate purchase NAV
+    if (!purchaseNAV || purchaseNAV <= 0) {
+      showMutualFundModalError(
+        "fundPurchaseNAVError",
+        "Purchase NAV must be greater than 0"
+      );
+      hasErrors = true;
+    }
+
+    // Validate investment amount
+    if (!investmentAmount || investmentAmount <= 0) {
+      showMutualFundModalError(
+        "fundInvestmentAmountError",
+        "Investment amount must be greater than 0"
+      );
+      hasErrors = true;
+    }
+
+    // Validate purchase date
+    if (!purchaseDate) {
+      showMutualFundModalError(
+        "fundPurchaseDateError",
+        "Purchase date is required"
+      );
+      hasErrors = true;
+    }
+
+    // If there are validation errors, stop here
+    if (hasErrors) {
       removeButtonLoading(submitBtn);
       return;
     }
 
     const session = getCurrentSession();
     if (!session) {
-      alert("Please login first");
+      showMutualFundModalError("fundSchemeError", "Please login first");
       removeButtonLoading(submitBtn);
       return;
     }
@@ -3443,6 +3836,7 @@ async function addMutualFund(event) {
     await loadUserData();
     const user = getUserData(session.email);
     if (!user) {
+      showMutualFundModalError("fundSchemeError", "User data not found");
       removeButtonLoading(submitBtn);
       return;
     }
@@ -3477,7 +3871,10 @@ async function addMutualFund(event) {
   } catch (error) {
     console.error("Add mutual fund error:", error);
     removeButtonLoading(submitBtn);
-    alert("Error adding mutual fund. Please try again.");
+    showMutualFundModalError(
+      "fundSchemeError",
+      "Error adding mutual fund. Please try again."
+    );
   }
 }
 

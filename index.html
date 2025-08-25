@@ -387,17 +387,17 @@
           <div class="edit-field-buttons">
             <button
               type="button"
-              class="btn-secondary"
-              onclick="cancelFieldEdit()"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
               class="btn-primary update-btn"
               onclick="saveFieldEdit()"
             >
               Update
+            </button>
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="cancelFieldEdit()"
+            >
+              Cancel
             </button>
           </div>
         </div>
@@ -409,6 +409,13 @@
             onclick="cancelProfileSettings()"
           >
             Back to Dashboard
+          </button>
+          <button
+            type="button"
+            class="btn-primary btn-danger"
+            onclick="confirmDeleteAccount()"
+          >
+            Delete Account
           </button>
         </div>
       </section>
