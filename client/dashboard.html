@@ -7,27 +7,20 @@
     <link rel="stylesheet" href="css/styles.css" />
     <script>
       // Check if user is logged in, if not redirect to login
-      (function () {
+      (async function () {
         try {
-          const backupData = localStorage.getItem("userData_backup");
-          if (backupData) {
-            const userData = JSON.parse(backupData);
-            const isLoggedIn = userData.sessions?.isLoggedIn || false;
-            
-            if (!isLoggedIn) {
-              // User is not logged in, redirect to login
-              window.location.href = "login.html";
-              return;
-            }
-          } else {
-            // No session data, redirect to login
+          const response = await fetch("/api/auth/verify", {
+            credentials: 'include'
+          });
+          
+          if (!response.ok) {
+            // User not authenticated, redirect to login
             window.location.href = "login.html";
-            return;
           }
         } catch (error) {
-          console.log("No backup session data found");
+          console.error("Auth check error:", error);
+          // On error, redirect to login
           window.location.href = "login.html";
-          return;
         }
       })();
     </script>

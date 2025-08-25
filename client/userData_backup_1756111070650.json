@@ -1,0 +1,39 @@
+{
+  "users": {
+    "admin@mail.com": {
+      "fullName": "Admin",
+      "email": "admin@mail.com",
+      "password": "Admin@1234s",
+      "portfolio": {
+        "value": 0,
+        "dailyChange": 0,
+        "totalGain": 0,
+        "transactions": [],
+        "holdings": [],
+        "stocks": [
+          {
+            "symbol": "12",
+            "company": "12",
+            "exchange": "BSE",
+            "quantity": 1212,
+            "avgPrice": 12,
+            "currentPrice": 12,
+            "purchaseDate": "2025-08-24",
+            "purchasePrice": 12
+          }
+        ],
+        "mutualFunds": [
+          {
+            "scheme": "oisdf",
+            "units": 55,
+            "purchaseNAV": 55,
+            "investmentAmount": 55,
+            "purchaseDate": "2025-08-24",
+            "dateAdded": "2025-08-24T15:33:32.188Z"
+          }
+        ]
+      }
+    }
+  },
+  "sessions": {}
+}

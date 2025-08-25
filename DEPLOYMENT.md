@@ -1,13 +1,19 @@
-# Zoho Catalyst Deployment Guide
+# Investment Tracker - Secure Zoho Catalyst Deployment
 
-## Prerequisites
+## Security Transformation Complete ✅
 
-- Zoho Catalyst account
-- Project files in the `client` folder
+### **Critical Security Changes**
+- **Removed ALL localStorage usage** for user data, sessions, and backups
+- **Implemented HTTP-only cookies** for secure session management  
+- **Added JWT authentication** with server-side validation
+- **Password hashing** with bcrypt (12+ salt rounds)
+- **Browser session isolation** - each browser/device has independent sessions
+- **CSRF protection** with SameSite strict cookies
+- **XSS prevention** with HTTP-only cookies
 
-## Deployment Steps
+## Zoho Catalyst Requirements
 
-### 1. Prepare Your Files
+### 1. **Environment Configuration**
 
 - Ensure all files are in the `client` folder with proper structure:
   ```

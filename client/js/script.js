@@ -85,62 +85,102 @@ function removeButtonLoading(button) {
 // END BUTTON STATE MANAGEMENT
 // ============================
 
-// Load userData from JSON file via server API
+// Load userData from secure server API
 async function loadUserData() {
   try {
-    // First try to load from server API
-    const response = await fetch("/api/loadUserData");
+    // Check authentication status first
+    const authResponse = await fetch("/api/auth/verify", {
+      credentials: 'include'
+    });
+    
+    if (!authResponse.ok) {
+      // User not authenticated, redirect to login
+      if (window.location.pathname !== '/login.html' && 
+          window.location.pathname !== '/signup.html' &&
+          window.location.pathname !== '/index.html') {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Initialize empty userData for login/signup pages
+      userData = { users: {}, sessions: {}, appSettings: {} };
+      return;
+    }
+    
+    const authData = await authResponse.json();
+    currentUser = authData.user;
+    
+    // Load portfolio data from server
+    const response = await fetch("/api/loadUserData", {
+      credentials: 'include'
+    });
+    
     if (response.ok) {
-      userData = await response.json();
-      console.log("User data loaded from server API");
-
-      // Also save to localStorage as backup
-      localStorage.setItem("userData_backup", JSON.stringify(userData));
+      const portfolioData = await response.json();
+      // Structure the data properly for the app
+      userData = {
+        users: {
+          [currentUser.email]: {
+            ...currentUser,
+            portfolio: portfolioData
+          }
+        },
+        sessions: {},
+        appSettings: {}
+      };
+      console.log("✅ User portfolio loaded from secure server");
+    } else {
+      throw new Error("Failed to load portfolio data");
+    }
+    
+  } catch (error) {
+    console.error("Error loading user data:", error);
+    
+    // If not on login/signup pages, redirect to login
+    if (window.location.pathname !== '/login.html' && 
+        window.location.pathname !== '/signup.html' &&
+        window.location.pathname !== '/index.html') {
+      window.location.href = 'login.html';
       return;
     }
-  } catch (error) {
-    console.log("Server API not available, trying localStorage backup");
+    
+    // Initialize empty userData for login/signup pages
+    userData = { users: {}, sessions: {}, appSettings: {} };
   }
-
-  try {
-    // Fallback to localStorage backup if server is not available
-    const backupData = localStorage.getItem("userData_backup");
-    if (backupData) {
-      userData = JSON.parse(backupData);
-      console.log("User data loaded from localStorage backup");
-      return;
-    }
-  } catch (error) {
-    console.log("Error loading from localStorage:", error);
-  }
-
-  // Final fallback to default structure
-  console.log("Using default userData structure");
 }
 
-// Save userData to JSON file via server API
+// Save userData to secure server API
 async function saveUserData() {
   try {
-    // Save to localStorage as immediate backup
-    localStorage.setItem("userData_backup", JSON.stringify(userData));
+    if (!currentUser) {
+      throw new Error("User not authenticated");
+    }
+    
+    // Extract portfolio data to save
+    const portfolioData = userData.users[currentUser.email]?.portfolio || {
+      stocks: [],
+      totalValue: 0,
+      totalInvestment: 0,
+      profit: 0,
+      profitPercentage: 0
+    };
 
-    // Try to save to server API for persistent file storage
     const response = await fetch("/api/saveUserData", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData),
+      credentials: 'include',
+      body: JSON.stringify(portfolioData),
     });
 
     if (response.ok) {
-      const result = await response.json();
-      console.log("✅ User data saved to userData.json file via server API");
+      console.log("✅ Portfolio data saved securely to server");
     } else {
-      console.log(
-        "⚠️ Server API not available, data saved to localStorage only"
-      );
+      const error = await response.json();
+      throw new Error(error.error || "Failed to save portfolio data");
     }
   } catch (error) {
-    console.log("⚠️ Server API error, data saved to localStorage only:", error);
+    console.error("❌ Error saving portfolio data:", error);
+    showNotification("Failed to save portfolio data. Please try again.", "error");
   }
 }
 
@@ -1092,34 +1132,26 @@ async function deleteAccount() {
       return;
     }
 
-    // Remove the user data from userData.json (cloud/server)
-    await removeUserData(currentSession.email);
-
-    // Clear all session data from userData.json (cloud/server)
-    await clearCurrentSession();
-
-    // Clear all localStorage backup data
-    localStorage.removeItem("userData_backup");
-    localStorage.removeItem("currentSession");
-
-    // Clear any other session-related localStorage items
-    const keys = Object.keys(localStorage);
-    keys.forEach((key) => {
-      if (
-        key.includes("session") ||
-        key.includes("user") ||
-        key.includes("login")
-      ) {
-        localStorage.removeItem(key);
-      }
+    // Call server to delete user account
+    const deleteResponse = await fetch("/api/auth/delete-account", {
+      method: "DELETE",
+      credentials: 'include'
     });
+
+    if (!deleteResponse.ok) {
+      throw new Error("Failed to delete account on server");
+    }
+
+    // Clear client-side state
+    currentUser = null;
+    userData = { users: {}, sessions: {}, appSettings: {} };
 
     // Show single success message
     showSuccessNotification("Account deleted successfully.");
 
     // Redirect to login page after a short delay to allow user to see the message
     setTimeout(() => {
-      location.reload();
+      window.location.href = "login.html";
     }, 2000);
   } catch (error) {
     console.error("Error deleting account:", error);
@@ -1946,8 +1978,26 @@ document.addEventListener("click", function (event) {
 
 // Logout function
 async function logout() {
-  // Clear user data from storage
-  await clearCurrentSession();
+  try {
+    // Call secure logout endpoint
+    const response = await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: 'include'
+    });
+
+    if (response.ok) {
+      console.log("✅ Logout successful");
+    } else {
+      console.log("⚠️ Logout response not ok, but clearing session anyway");
+    }
+  } catch (error) {
+    console.error("Logout error:", error);
+    // Continue with logout even if server request fails
+  }
+
+  // Clear client-side state
+  currentUser = null;
+  userData = { users: {}, sessions: {}, appSettings: {} };
 
   // Redirect to login page
   window.location.href = "login.html";
@@ -2453,43 +2503,38 @@ async function handleLogin() {
       return;
     }
 
-    // Check if user exists (simplified validation)
-    const userData = getUserData(email);
-    if (!userData) {
-      showError("loginEmailError", "User not found");
-      removeButtonLoading(loginBtn);
-      return;
-    }
-
-    if (userData.password !== password) {
-      showError("loginPasswordError", "Incorrect password");
-      removeButtonLoading(loginBtn);
-      return;
-    }
-
-    // Store user session
-    await setCurrentSession({
-      name: userData.fullName,
-      email: email,
-      currentPage: "dashboard",
+    // Send login request to secure server
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: 'include',
+      body: JSON.stringify({ email: email.trim(), password }),
     });
 
-    // Update header profile visibility
-    updateHeaderProfile();
+    const result = await response.json();
 
-    // Show dashboard and hide login
-    showDashboard(email);
+    if (response.ok) {
+      // Login successful
+      currentUser = result.user;
+      showNotification("Login successful! Welcome back.", "success");
+      
+      // Redirect to dashboard
+      window.location.href = 'dashboard.html';
+    } else {
+      // Login failed
+      if (result.error === "Invalid credentials") {
+        showError("loginPasswordError", "Invalid email or password");
+      } else {
+        showError("loginEmailError", result.error || "Login failed");
+      }
+    }
 
-    // Clear fields
-    clearLoginFields();
+    // Reset button state
+    removeButtonLoading(loginBtn);
 
-    // Reset button state after successful login
-    setTimeout(() => {
-      removeButtonLoading(loginBtn);
-      resetButtonState(loginBtn);
-    }, 100);
   } catch (error) {
     console.error("Login error:", error);
+    showError("loginEmailError", "Network error. Please check your connection.");
     removeButtonLoading(loginBtn);
   }
 }
@@ -2532,23 +2577,16 @@ async function handleSignup() {
     } else if (!isValidEmail(email.trim())) {
       showError("signupEmailError", "Please enter a valid email address");
       hasErrors = true;
-    } else {
-      // Check if email already exists
-      const existingUser = getUserData(email);
-      if (existingUser) {
-        showError("signupEmailError", "Email already registered");
-        hasErrors = true;
-      }
     }
 
     // Validate password
     if (!password.trim()) {
       showError("signupPasswordError", "Password is required");
       hasErrors = true;
-    } else if (password.length < 6) {
+    } else if (password.length < 8) {
       showError(
         "signupPasswordError",
-        "Password must be at least 6 characters long"
+        "Password must be at least 8 characters long"
       );
       hasErrors = true;
     }
@@ -2567,46 +2605,42 @@ async function handleSignup() {
       return;
     }
 
-    // Store user data (in real app, this would be sent to server)
-    const userData = {
-      fullName: fullName,
-      email: email,
-      password: password, // In real app, this would be hashed
-      portfolio: {
-        value: 0,
-        dailyChange: 0,
-        totalGain: 0,
-        transactions: [],
-        holdings: [],
-      },
-    };
-
-    // Use email as username since we removed username field
-    const username = email;
-    await setUserData(username, userData);
-
-    await setCurrentSession({
-      name: fullName,
-      email: email,
-      currentPage: "dashboard",
+    // Send registration request to secure server
+    const response = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: 'include',
+      body: JSON.stringify({ 
+        name: fullName.trim(), 
+        email: email.trim(), 
+        password 
+      }),
     });
 
-    // Update header profile visibility
-    updateHeaderProfile();
+    const result = await response.json();
 
-    // Show dashboard and hide signup
-    showDashboard(username);
+    if (response.ok) {
+      // Registration successful
+      currentUser = result.user;
+      showNotification("Account created successfully! Welcome!", "success");
+      
+      // Redirect to dashboard
+      window.location.href = 'dashboard.html';
+    } else {
+      // Registration failed
+      if (result.error === "User already exists") {
+        showError("signupEmailError", "Email already registered");
+      } else {
+        showError("signupEmailError", result.error || "Registration failed");
+      }
+    }
 
-    // Clear fields
-    clearSignupFields();
+    // Reset button state
+    removeButtonLoading(signupBtn);
 
-    // Reset button state after successful signup
-    setTimeout(() => {
-      removeButtonLoading(signupBtn);
-      resetButtonState(signupBtn);
-    }, 100);
   } catch (error) {
     console.error("Signup error:", error);
+    showError("signupEmailError", "Network error. Please check your connection.");
     removeButtonLoading(signupBtn);
   }
 }

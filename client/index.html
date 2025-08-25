@@ -7,28 +7,23 @@
     <link rel="stylesheet" href="css/styles.css" />
     <script>
       // Fast page initialization - redirect to appropriate page
-      (function () {
-        // Try to get session from localStorage backup first
-        let currentSession = null;
-        let isLoggedIn = false;
-
+      (async function () {
         try {
-          const backupData = localStorage.getItem("userData_backup");
-          if (backupData) {
-            const userData = JSON.parse(backupData);
-            currentSession = userData.sessions?.currentUser;
-            isLoggedIn = userData.sessions?.isLoggedIn || false;
+          // Check authentication status with server
+          const response = await fetch("/api/auth/verify", {
+            credentials: 'include'
+          });
+          
+          if (response.ok) {
+            // User is authenticated, redirect to dashboard
+            window.location.href = "dashboard.html";
+          } else {
+            // User not authenticated, redirect to login
+            window.location.href = "login.html";
           }
         } catch (error) {
-          console.log("No backup session data found");
-        }
-
-        // Redirect based on authentication status
-        if (isLoggedIn && currentSession) {
-          // User is logged in, redirect to dashboard
-          window.location.href = "dashboard.html";
-        } else {
-          // User is not logged in, redirect to login
+          console.error("Auth check error:", error);
+          // On error, redirect to login
           window.location.href = "login.html";
         }
       })();

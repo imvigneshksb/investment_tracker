@@ -7,21 +7,19 @@
     <link rel="stylesheet" href="css/styles.css" />
     <script>
       // Check if user is already logged in and redirect to dashboard
-      (function () {
+      (async function () {
         try {
-          const backupData = localStorage.getItem("userData_backup");
-          if (backupData) {
-            const userData = JSON.parse(backupData);
-            const isLoggedIn = userData.sessions?.isLoggedIn || false;
-            
-            if (isLoggedIn) {
-              // User is already logged in, redirect to dashboard
-              window.location.href = "dashboard.html";
-              return;
-            }
+          const response = await fetch("/api/auth/verify", {
+            credentials: 'include'
+          });
+          
+          if (response.ok) {
+            // User is already authenticated, redirect to dashboard
+            window.location.href = "dashboard.html";
           }
         } catch (error) {
-          console.log("No backup session data found");
+          // User not authenticated, stay on signup page
+          console.log("User not authenticated, showing signup page");
         }
       })();
     </script>

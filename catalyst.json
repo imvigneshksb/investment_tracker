@@ -1,0 +1,102 @@
+{
+  "name": "investment-tracker",
+  "description": "Investment Tracker with secure authentication and portfolio management",
+  "version": "2.0.0",
+  "runtime": "nodejs18",
+  "main": "server.js",
+  "functions": [
+    {
+      "name": "investment-tracker-server",
+      "source": ".",
+      "entry": "server.js",
+      "runtime": "nodejs18",
+      "memory": 512,
+      "timeout": 30,
+      "env_variables": {
+        "NODE_ENV": "production",
+        "JWT_SECRET": "${jwt_secret}",
+        "SESSION_SECRET": "${session_secret}",
+        "CLIENT_URL": "${client_url}",
+        "COOKIE_DOMAIN": ".catalystserverless.com"
+      }
+    }
+  ],
+  "datastore": {
+    "tables": [
+      {
+        "table_name": "Users",
+        "columns": [
+          {
+            "column_name": "email",
+            "data_type": "varchar",
+            "max_length": 255,
+            "is_nullable": false,
+            "is_unique": true
+          },
+          {
+            "column_name": "password",
+            "data_type": "varchar",
+            "max_length": 255,
+            "is_nullable": false
+          },
+          {
+            "column_name": "name",
+            "data_type": "varchar",
+            "max_length": 255,
+            "is_nullable": false
+          },
+          {
+            "column_name": "created_at",
+            "data_type": "datetime",
+            "is_nullable": false,
+            "default_value": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "updated_at",
+            "data_type": "datetime",
+            "is_nullable": false,
+            "default_value": "CURRENT_TIMESTAMP"
+          }
+        ]
+      },
+      {
+        "table_name": "Portfolios",
+        "columns": [
+          {
+            "column_name": "user_id",
+            "data_type": "varchar",
+            "max_length": 255,
+            "is_nullable": false
+          },
+          {
+            "column_name": "portfolio_data",
+            "data_type": "text",
+            "is_nullable": false
+          },
+          {
+            "column_name": "last_updated",
+            "data_type": "datetime",
+            "is_nullable": false,
+            "default_value": "CURRENT_TIMESTAMP"
+          }
+        ],
+        "foreign_keys": [
+          {
+            "column_name": "user_id",
+            "referenced_table": "Users",
+            "referenced_column": "email"
+          }
+        ]
+      }
+    ]
+  },
+  "static_content": {
+    "folder": "client",
+    "rules": [
+      {
+        "source": "**/*",
+        "destination": "/"
+      }
+    ]
+  }
+}
