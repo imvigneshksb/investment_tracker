@@ -116,7 +116,7 @@
   width: 100%;
   min-height: 48px;
   padding: var(--spacing-lg) var(--spacing-xl);
-  min-width: 120px;
+  min-width: max-content;
 
   /* Typography */
   font-family: var(--font-family);
@@ -266,7 +266,7 @@
   width: 100%;
   min-height: 48px;
   padding: var(--spacing-lg) var(--spacing-xl);
-  min-width: 120px;
+  min-width: max-content;
 
   /* Typography */
   font-family: var(--font-family);
@@ -447,8 +447,8 @@
   font-size: var(--font-md);
   font-weight: var(--weight-medium);
   box-shadow: var(--shadow-medium);
-  min-width: 280px;
-  max-width: 400px;
+  min-width: min(280px, 90vw);
+  max-width: min(400px, 95vw);
   pointer-events: auto;
   transform: translateX(100%);
   opacity: 0;
@@ -579,7 +579,7 @@ textarea,
 }
 
 .header-content {
-  max-width: 1400px;
+  max-width: min(1400px, 100%);
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -692,7 +692,7 @@ textarea,
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-heavy);
   border: var(--border-thin) var(--input-border);
-  min-width: 220px;
+  min-width: min(220px, 90vw);
   z-index: var(--z-modal);
   overflow: hidden;
 }
@@ -787,7 +787,7 @@ textarea,
 
 /* Single Column Container */
 .single-column-container {
-  max-width: 1400px;
+  max-width: min(1400px, 100%);
   margin: 0 auto;
   padding: var(--spacing-massive) var(--spacing-huge);
   display: flex;
@@ -816,12 +816,12 @@ section {
 
 /* Login Section */
 .login-form {
-  max-width: 500px;
+  max-width: min(500px, 95vw);
   margin: 0 auto;
 }
 
 .signup-form {
-  max-width: 500px;
+  max-width: min(500px, 95vw);
   margin: 0 auto;
 }
 
@@ -1126,14 +1126,14 @@ input.input-field {
 /* Legacy dropdown container (for backward compatibility) */
 .dropdown-container {
   position: relative;
-  max-width: 500px;
+  max-width: min(500px, 95vw);
   margin: 0 auto;
 }
 
 /* Details dropdown container (new independent dropdown) */
 .details-dropdown-container {
   position: relative;
-  max-width: 500px;
+  max-width: min(500px, 95vw);
   margin: 0 auto;
 }
 
@@ -1355,13 +1355,13 @@ input.input-field {
 }
 
 .profile-settings-form {
-  max-width: 500px;
+  max-width: min(500px, 95vw);
   margin: 0 auto;
 }
 
 /* Edit Field Container */
 .edit-field-container {
-  max-width: 500px;
+  max-width: min(500px, 95vw);
   margin: var(--spacing-xxl) auto 0 auto;
   padding: var(--spacing-xxl);
   background-color: var(--container-bg);
@@ -1388,9 +1388,9 @@ input.input-field {
 .edit-field-buttons .btn-secondary,
 .edit-field-buttons .update-btn {
   flex: none !important;
-  width: 120px !important;
-  min-width: 120px !important;
-  max-width: 120px !important;
+  width: auto !important;
+  min-width: max-content !important;
+  max-width: none !important;
   padding: var(--spacing-lg) var(--spacing-xl) !important;
   border-radius: var(--radius-round) !important;
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif !important;
@@ -1421,7 +1421,7 @@ input.input-field {
 }
 
 .profile-settings-section .profile-settings-buttons {
-  max-width: 500px;
+  max-width: min(500px, 95vw);
   margin: var(--spacing-xxl) auto 0 auto;
   justify-content: center;
 }
@@ -1430,14 +1430,14 @@ input.input-field {
 .profile-settings-section .profile-settings-buttons button {
   flex: none;
   width: auto;
-  min-width: 200px;
+  min-width: max-content;
   padding: var(--spacing-xl) var(--spacing-xxxl);
 }
 
 .profile-settings-section .btn-secondary {
   flex: none;
   width: auto;
-  min-width: 200px;
+  min-width: max-content;
   padding: var(--spacing-xl) var(--spacing-xxxl);
 }
 
@@ -1797,7 +1797,7 @@ input.input-field {
 
 .holdings-table {
   width: 100%;
-  min-width: 1000px;
+  min-width: min(1000px, 100vw);
 }
 
 .holdings-header {
@@ -1939,24 +1939,24 @@ input.input-field {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .single-column-container {
-    padding: 20px 15px;
-    gap: 30px;
+    padding: var(--spacing-xxl) var(--spacing-lg);
+    gap: var(--spacing-huge);
   }
 
   section {
-    padding: 25px 20px;
-    border-radius: 15px;
+    padding: var(--spacing-xxxl) var(--spacing-xxl);
+    border-radius: var(--radius-lg);
   }
 
   .section-title {
-    font-size: 20px;
-    margin-bottom: 20px;
+    font-size: var(--font-title-sm);
+    margin-bottom: var(--spacing-xxl);
   }
 
   .main-header {
-    padding: 0 15px;
+    padding: 0 var(--spacing-lg);
   }
 
   .header-content {
@@ -2023,28 +2023,28 @@ input.input-field {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 30rem) {
   .single-column-container {
-    padding: 15px 10px;
-    gap: 25px;
+    padding: var(--spacing-lg) var(--spacing-sm);
+    gap: var(--spacing-xxxl);
   }
 
   section {
-    padding: 20px 15px;
+    padding: var(--spacing-xxl) var(--spacing-lg);
   }
 
   .section-title {
-    font-size: 18px;
-    margin-bottom: 15px;
+    font-size: var(--font-xxl);
+    margin-bottom: var(--spacing-lg);
   }
 
   .main-header {
-    padding: 0 10px;
+    padding: 0 var(--spacing-sm);
   }
 
   .chart-controls {
     flex-wrap: wrap;
-    gap: 6px;
+    gap: var(--spacing-xs);
   }
 
   .time-btn {
@@ -2099,7 +2099,7 @@ input.input-field {
 
   .profile-settings-buttons button {
     width: 100%;
-    max-width: 250px;
+    max-width: min(250px, 90vw);
   }
 }
 
@@ -2139,7 +2139,7 @@ body.modal-open {
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-heavy);
   width: 90%;
-  max-width: 500px;
+  max-width: min(500px, 95vw);
   max-height: 90vh;
   overflow: hidden; /* Hide overflow on the container to preserve border radius */
   display: flex;
@@ -2316,7 +2316,7 @@ body.modal-open {
 
 .submit-btn {
   /* Uses primary button system with minimum width */
-  min-width: 120px;
+  min-width: max-content;
 }
 
 .form-actions {
