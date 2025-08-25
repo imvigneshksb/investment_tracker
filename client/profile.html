@@ -10,9 +10,9 @@
       (async function () {
         try {
           const response = await fetch("/api/auth/verify", {
-            credentials: 'include'
+            credentials: "include",
           });
-          
+
           if (!response.ok) {
             // User not authenticated, redirect to login
             window.location.href = "login.html";
@@ -133,10 +133,7 @@
 
     <div class="single-column-container">
       <!-- Profile Settings Section -->
-      <section
-        class="profile-settings-section"
-        id="profileSettingsSection"
-      >
+      <section class="profile-settings-section" id="profileSettingsSection">
         <h2 class="section-title">Profile Settings</h2>
         <div class="details-dropdown-container">
           <button
@@ -277,7 +274,7 @@
           </button>
           <button
             type="button"
-            class="btn-primary btn-danger"
+            class="btn-primary btn-delete"
             onclick="confirmDeleteAccount()"
           >
             Delete Account

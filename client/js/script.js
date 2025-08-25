@@ -23,6 +23,25 @@ function resetButtonState(button) {
     // Reset any inline styles that might persist (removed transform since we don't use it)
     btnElement.style.boxShadow = "";
 
+    // Force button colors to prevent grey coloring
+    if (
+      btnElement.classList.contains("btn-primary") ||
+      btnElement.classList.contains("login-btn") ||
+      btnElement.classList.contains("signup-btn") ||
+      btnElement.classList.contains("update-btn")
+    ) {
+      btnElement.style.backgroundColor = "";
+      btnElement.style.color = "";
+      btnElement.style.border = "";
+
+      // Remove and re-add classes to force CSS re-evaluation
+      setTimeout(() => {
+        const classes = btnElement.className;
+        btnElement.className = "";
+        btnElement.className = classes;
+      }, 10);
+    }
+
     // Remove any temporary disabled state
     if (!btnElement.hasAttribute("data-originally-disabled")) {
       btnElement.disabled = false;
@@ -1065,7 +1084,7 @@ function confirmDeleteAccount() {
           </div>
         </div>
         <div class="form-actions">
-          <button type="button" class="btn-primary btn-danger" onclick="proceedWithDeleteAccount()">Delete Account</button>
+          <button type="button" class="btn-primary btn-delete" onclick="proceedWithDeleteAccount()">Delete Account</button>
           <button type="button" class="btn-secondary" onclick="hideDeleteAccountModal()">Cancel</button>
         </div>
       </div>
