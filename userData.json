@@ -35,13 +35,5 @@
       }
     }
   },
-  "sessions": {
-    "currentUser": {
-      "name": "Admin",
-      "email": "admin@mail.com",
-      "currentPage": "dashboard"
-    },
-    "isLoggedIn": true,
-    "currentPage": "dashboard"
-  }
+  "sessions": {}
 }

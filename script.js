@@ -203,6 +203,31 @@ function clearAllErrors() {
   });
 }
 
+function clearAllInputs() {
+  // Clear login form inputs
+  const loginInputs = ["email", "password"];
+  loginInputs.forEach((inputId) => {
+    const input = document.getElementById(inputId);
+    if (input) {
+      input.value = "";
+    }
+  });
+
+  // Clear signup form inputs
+  const signupInputs = ["fullName", "signupEmail", "signupPassword", "confirmPassword"];
+  signupInputs.forEach((inputId) => {
+    const input = document.getElementById(inputId);
+    if (input) {
+      input.value = "";
+    }
+  });
+}
+
+function clearAllErrorsAndInputs() {
+  clearAllErrors();
+  clearAllInputs();
+}
+
 // Setup input event listeners to hide errors on typing
 function setupInputErrorHandling() {
   const inputFieldMappings = [
@@ -2616,6 +2641,9 @@ async function handleSignup() {
 }
 
 async function showLogin() {
+  // Clear all error messages and input values when switching to login page
+  clearAllErrorsAndInputs();
+  
   document.getElementById("loginSection").style.display = "block";
   document.getElementById("signupSection").style.display = "none";
   document.getElementById("profileSettingsSection").style.display = "none";
@@ -2632,6 +2660,9 @@ async function showLogin() {
 }
 
 async function showSignup() {
+  // Clear all error messages and input values when switching to signup page
+  clearAllErrorsAndInputs();
+  
   document.getElementById("loginSection").style.display = "none";
   document.getElementById("signupSection").style.display = "block";
   document.getElementById("profileSettingsSection").style.display = "none";
