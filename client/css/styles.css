@@ -96,10 +96,6 @@
   --weight-semibold: 600;
   --weight-bold: 700;
 
-  /* Transitions */
-  --transition-fast: 0.2s ease;
-  --transition-medium: 0.3s ease;
-
   /* Z-index */
   --z-dropdown: 100;
   --z-dropdown-menu: 200;
@@ -142,10 +138,6 @@
   cursor: pointer;
   user-select: none;
 
-  /* Transitions - Only for colors and shadows, no transform */
-  transition: background-color 0.2s ease, border-color 0.2s ease,
-    color 0.2s ease;
-
   /* States */
   position: relative;
   overflow: hidden;
@@ -155,8 +147,6 @@
 .btn-primary:hover {
   background-color: var(--button-hover);
   box-shadow: var(--shadow-medium);
-  transition: background-color 0.2s ease, border-color 0.2s ease,
-    color 0.2s ease;
 }
 
 /* Primary Button Focus State */
@@ -172,8 +162,6 @@
 .btn-primary:active {
   background-color: var(--button-hover);
   transform: translateY(1px);
-  transition: background-color 0.1s ease, box-shadow 0.1s ease,
-    transform 0.1s ease;
 }
 
 /* Primary Button Disabled State */
@@ -215,8 +203,6 @@
 .btn-primary.btn-danger:hover {
   background-color: var(--danger-hover);
   box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
-  transition: background-color 0.2s ease, border-color 0.2s ease,
-    color 0.2s ease;
 }
 
 /* Danger Button Focus State */
@@ -232,8 +218,6 @@
 .btn-primary.btn-danger:active {
   background-color: var(--danger-hover);
   transform: translateY(1px);
-  transition: background-color 0.1s ease, box-shadow 0.1s ease,
-    transform 0.1s ease;
 }
 
 /* Danger Button Disabled State */
@@ -320,10 +304,6 @@
   cursor: pointer;
   user-select: none;
 
-  /* Transitions - Only for colors and shadows, no transform */
-  transition: background-color 0.2s ease, border-color 0.2s ease,
-    color 0.2s ease;
-
   /* States */
   position: relative;
   overflow: hidden;
@@ -334,8 +314,6 @@
   background-color: transparent;
   color: var(--button-bg);
   border-color: var(--button-bg);
-  transition: background-color 0.2s ease, border-color 0.2s ease,
-    color 0.2s ease;
 }
 
 /* Secondary Button Focus State */
@@ -346,8 +324,6 @@
   border-color: var(--button-bg);
   outline: none;
   box-shadow: var(--focus-shadow) !important;
-  transition: background-color 0.2s ease, border-color 0.2s ease,
-    color 0.2s ease;
 }
 
 /* Secondary Button Active State */
@@ -356,8 +332,6 @@
   border-color: var(--button-bg);
   box-shadow: var(--shadow-inset);
   transform: translateY(1px);
-  transition: background-color 0.1s ease, border-color 0.1s ease,
-    box-shadow 0.1s ease, transform 0.1s ease;
 }
 
 /* Secondary Button Disabled State */
@@ -402,8 +376,6 @@
   border-color: var(--danger-hover);
   color: var(--danger-text);
   box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
-  transition: background-color 0.2s ease, border-color 0.2s ease,
-    color 0.2s ease;
 }
 
 /* Secondary Danger Button Focus State */
@@ -423,8 +395,6 @@
   border-color: var(--danger-hover);
   color: var(--danger-text);
   transform: translateY(1px);
-  transition: background-color 0.1s ease, border-color 0.1s ease,
-    box-shadow 0.1s ease, transform 0.1s ease;
   box-shadow: inset 0 2px 4px rgba(220, 53, 69, 0.2);
 }
 
@@ -713,7 +683,6 @@ textarea,
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color var(--transition-fast);
   border: var(--border-transparent);
 }
 
@@ -774,8 +743,6 @@ textarea,
   align-items: center;
   gap: var(--spacing-md);
   cursor: pointer;
-  transition: background-color var(--transition-fast),
-    color var(--transition-fast);
   color: var(--text-color);
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: var(--font-md);
@@ -799,8 +766,6 @@ textarea,
   align-items: center;
   gap: var(--spacing-md);
   cursor: pointer;
-  transition: background-color var(--transition-fast),
-    color var(--transition-fast);
   color: var(--text-color);
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: var(--font-md);
@@ -969,7 +934,6 @@ section {
   background-image: none !important;
   color: var(--text-color) !important;
   border: 2px solid var(--input-border) !important;
-  transition: none !important;
   animation-name: none !important;
   animation-duration: 0s !important;
   animation-delay: 0s !important;
@@ -1069,7 +1033,6 @@ input.input-field {
   text-decoration: none;
   font-weight: var(--weight-semibold);
   cursor: pointer;
-  transition: color 0.2s ease;
   margin-left: 5px;
 }
 
@@ -1113,8 +1076,6 @@ input.input-field {
     rgba(0, 123, 255, 0.1),
     rgba(0, 123, 255, 0.05)
   );
-  transition: color var(--transition-fast), background var(--transition-fast),
-    border-color var(--transition-fast);
   position: relative;
   display: inline-block;
   border: var(--border-thin) rgba(0, 123, 255, 0.2);
@@ -1163,8 +1124,6 @@ input.input-field {
     rgba(0, 123, 255, 0.1),
     rgba(0, 123, 255, 0.05)
   );
-  transition: color var(--transition-fast), background var(--transition-fast),
-    border-color var(--transition-fast);
   position: relative;
   display: inline-block;
   border: var(--border-thin) rgba(0, 123, 255, 0.2);
@@ -1207,8 +1166,6 @@ input.input-field {
   font-size: var(--font-xl);
   font-weight: var(--weight-medium);
   cursor: pointer;
-  transition: border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1227,8 +1184,6 @@ input.input-field {
   font-size: var(--font-xl);
   font-weight: var(--weight-medium);
   cursor: pointer;
-  transition: border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1264,7 +1219,6 @@ input.input-field {
 .dropdown-arrow {
   width: 20px;
   height: 20px;
-  transition: transform 0.2s ease;
 }
 
 .dropdown-button.open .dropdown-arrow {
@@ -1343,7 +1297,6 @@ input.input-field {
   font-size: var(--font-xl);
   font-weight: var(--weight-medium);
   cursor: pointer;
-  transition: all var(--transition-fast);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1390,8 +1343,6 @@ input.input-field {
   align-items: center;
   gap: var(--spacing-md);
   cursor: pointer;
-  transition: background-color var(--transition-fast),
-    color var(--transition-fast);
   color: var(--text-color);
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: var(--font-md);
@@ -1463,8 +1414,6 @@ input.input-field {
   font-size: var(--font-xl) !important;
   font-weight: var(--weight-semibold) !important;
   cursor: pointer;
-  transition: background-color var(--transition-fast),
-    border-color var(--transition-fast), color var(--transition-fast);
   line-height: 1.2 !important;
   text-align: center !important;
   box-sizing: border-box !important;
@@ -1535,7 +1484,6 @@ input.input-field {
   font-size: 14px;
   font-weight: var(--weight-semibold);
   cursor: pointer;
-  transition: background-color 0.2s ease;
   margin-left: 15px;
 }
 
@@ -1547,8 +1495,6 @@ input.input-field {
   background-color: var(--danger-hover);
   box-shadow: var(--shadow-inset);
   transform: translateY(1px);
-  transition: background-color 0.1s ease, box-shadow 0.1s ease,
-    transform 0.1s ease;
 }
 
 /* Action Buttons */
@@ -1594,8 +1540,6 @@ input.input-field {
   border-color: var(--button-hover);
   box-shadow: var(--shadow-inset);
   transform: translateY(1px);
-  transition: background-color 0.1s ease, border-color 0.1s ease,
-    box-shadow 0.1s ease, transform 0.1s ease;
 }
 
 /* Portfolio Summary */
@@ -1656,8 +1600,6 @@ input.input-field {
   border-color: var(--button-hover);
   box-shadow: var(--shadow-inset);
   transform: translateY(1px);
-  transition: background-color 0.1s ease, border-color 0.1s ease,
-    box-shadow 0.1s ease, transform 0.1s ease;
 }
 
 .chart-container {
@@ -1917,7 +1859,6 @@ input.input-field {
   background: var(--input-border);
   border-radius: var(--radius-sm);
   border: 1px solid var(--bg-color);
-  transition: var(--transition-fast);
 }
 
 .holdings-container::-webkit-scrollbar-thumb:hover,
@@ -1942,7 +1883,6 @@ input.input-field {
   gap: 15px;
   padding: 18px 20px;
   border-bottom: 1px solid var(--input-border);
-  transition: background-color 0.2s ease;
 }
 
 .holding-row:hover {
@@ -2254,7 +2194,6 @@ body.modal-open {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: all var(--transition-fast);
   /* Make it focusable for keyboard navigation */
   outline: none;
 }
@@ -2264,8 +2203,6 @@ body.modal-open {
   background-color: var(--button-bg);
   color: var(--button-text);
   box-shadow: var(--shadow-medium);
-  transition: background-color 0.2s ease, border-color 0.2s ease,
-    color 0.2s ease;
 }
 
 /* Modal Close Button Focus State */
@@ -2283,8 +2220,6 @@ body.modal-open {
   background-color: var(--button-hover);
   color: var(--button-text);
   transform: translateY(1px);
-  transition: background-color 0.1s ease, box-shadow 0.1s ease,
-    transform 0.1s ease;
 }
 
 /* Modal Close Button Disabled State */
@@ -2335,7 +2270,6 @@ body.modal-open {
   font-family: inherit;
   background: var(--input-bg);
   color: var(--text-color);
-  transition: all var(--transition-fast);
 }
 
 .search-input:focus {
@@ -2354,7 +2288,6 @@ body.modal-open {
   font-weight: var(--weight-medium);
   background: var(--input-bg);
   color: var(--text-color);
-  transition: all var(--transition-fast);
   cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23666'%3e%3cpolyline points='6,9 12,15 18,9'/%3e%3c/svg%3e");
@@ -2388,7 +2321,6 @@ body.modal-open {
   font-family: inherit;
   background: var(--input-bg);
   color: var(--text-color);
-  transition: all var(--transition-fast);
 }
 
 .form-input:focus {
@@ -2429,7 +2361,6 @@ body.modal-open {
   font-size: var(--font-md);
   font-weight: var(--weight-medium);
   cursor: pointer;
-  transition: all var(--transition-fast);
   min-width: 120px;
   height: 44px;
   display: flex;
@@ -2509,7 +2440,6 @@ body.modal-open {
   cursor: pointer;
   padding: var(--spacing-xs);
   border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2539,7 +2469,6 @@ body.modal-open {
 
 .portfolio-action-btn:active {
   transform: translateY(1px);
-  transition: transform 0.1s ease;
 }
 
 .portfolio-action-btn.edit-btn:active {
