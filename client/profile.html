@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Investment Tracker</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <script>
+      // Check if user is logged in, if not redirect to login
+      (function () {
+        try {
+          const backupData = localStorage.getItem("userData_backup");
+          if (backupData) {
+            const userData = JSON.parse(backupData);
+            const isLoggedIn = userData.sessions?.isLoggedIn || false;
+            
+            if (!isLoggedIn) {
+              // User is not logged in, redirect to login
+              window.location.href = "login.html";
+              return;
+            }
+          } else {
+            // No session data, redirect to login
+            window.location.href = "login.html";
+            return;
+          }
+        } catch (error) {
+          console.log("No backup session data found");
+          window.location.href = "login.html";
+          return;
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Header -->
+    <header class="main-header">
+      <div class="header-content">
+        <h1 class="logo" onclick="goToHomePage()" tabindex="0">
+          Investment Tracker
+        </h1>
+        <div class="header-profile">
+          <div
+            class="profile-icon"
+            id="profileIcon"
+            onclick="toggleProfileMenu()"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="8"
+                r="4"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+              />
+              <path
+                d="M20 21a8 8 0 1 0-16 0"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+              />
+            </svg>
+          </div>
+          <div class="dropdown" id="profileDropdown" style="display: none">
+            <div class="profile-info">
+              <div class="profile-name" id="profileName">User Name</div>
+              <div class="profile-email" id="profileEmail">user@email.com</div>
+            </div>
+            <hr class="profile-divider" />
+            <div class="profile-menu-item" onclick="showProfileSettings()">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  fill="none"
+                />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="3"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  fill="none"
+                />
+              </svg>
+              Profile Settings
+            </div>
+            <div class="profile-menu-item" onclick="logout()">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  fill="none"
+                />
+                <polyline
+                  points="16,17 21,12 16,7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  fill="none"
+                />
+                <line
+                  x1="21"
+                  y1="12"
+                  x2="9"
+                  y2="12"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              </svg>
+              Logout
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="single-column-container">
+      <!-- Profile Settings Section -->
+      <section
+        class="profile-settings-section"
+        id="profileSettingsSection"
+      >
+        <h2 class="section-title">Profile Settings</h2>
+        <div class="details-dropdown-container">
+          <button
+            class="details-dropdown-button"
+            onclick="toggleDetailsDropdown()"
+            tabindex="0"
+            role="combobox"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <span id="detailsDropdownButtonText">Select detail to update</span>
+            <svg
+              class="dropdown-arrow"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="6,9 12,15 18,9"></polyline>
+            </svg>
+          </button>
+          <div
+            class="details-dropdown"
+            id="detailsDropdownMenu"
+            style="display: none"
+          >
+            <div
+              class="details-menu-item"
+              onclick="selectDetailsDropdownOption('Name'); showEditField('name');"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Name
+            </div>
+            <div class="details-divider"></div>
+            <div
+              class="details-menu-item"
+              onclick="selectDetailsDropdownOption('Email'); showEditField('email');"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                ></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              Email
+            </div>
+            <div class="details-divider"></div>
+            <div
+              class="details-menu-item"
+              onclick="selectDetailsDropdownOption('Password'); showEditField('password');"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <circle cx="12" cy="16" r="1"></circle>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              Password
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Field Container (Initially Hidden) -->
+        <div
+          class="edit-field-container"
+          id="editFieldContainer"
+          style="display: none"
+        >
+          <div class="input-group">
+            <label class="field-label" id="fieldLabel">Edit Field</label>
+            <input
+              type="text"
+              class="input-field"
+              id="editFieldInput"
+              placeholder="Enter new value"
+            />
+            <div class="error-message" id="editFieldError"></div>
+          </div>
+
+          <!-- Password Confirmation (Hidden by default) -->
+          <div
+            class="input-group"
+            id="confirmPasswordGroup"
+            style="display: none"
+          >
+            <label class="field-label">Confirm New Password</label>
+            <input
+              type="password"
+              class="input-field"
+              id="confirmPasswordInput"
+              placeholder="Confirm new password"
+            />
+            <div class="error-message" id="confirmPasswordError"></div>
+          </div>
+
+          <div class="edit-field-buttons">
+            <button
+              type="button"
+              class="btn-primary update-btn"
+              onclick="saveFieldEdit()"
+            >
+              Update
+            </button>
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="cancelFieldEdit()"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <div class="profile-settings-buttons" style="margin-top: 20px">
+          <button
+            type="button"
+            class="btn-primary back-to-dashboard"
+            onclick="cancelProfileSettings()"
+          >
+            Back to Dashboard
+          </button>
+          <button
+            type="button"
+            class="btn-primary btn-danger"
+            onclick="confirmDeleteAccount()"
+          >
+            Delete Account
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>

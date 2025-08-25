@@ -214,7 +214,12 @@ function clearAllInputs() {
   });
 
   // Clear signup form inputs
-  const signupInputs = ["fullName", "signupEmail", "signupPassword", "confirmPassword"];
+  const signupInputs = [
+    "fullName",
+    "signupEmail",
+    "signupPassword",
+    "confirmPassword",
+  ];
   signupInputs.forEach((inputId) => {
     const input = document.getElementById(inputId);
     if (input) {
@@ -831,41 +836,17 @@ function toggleProfileMenu() {
 
 // Profile settings function
 async function showProfileSettings() {
-  // Hide profile dropdown
-  const dropdown = document.querySelector(".dropdown");
-  if (dropdown) dropdown.style.display = "none";
-
-  // Reset details dropdown to default state
-  resetDetailsDropdown();
-
-  // Hide edit field container if it's open
-  const editFieldContainer = document.getElementById("editFieldContainer");
-  if (editFieldContainer) {
-    editFieldContainer.style.display = "none";
+  // Update current session with profile page
+  const currentSession = getCurrentSession();
+  if (currentSession) {
+    await setCurrentSession({
+      ...currentSession,
+      currentPage: "profile-settings",
+    });
   }
 
-  // Show back button
-  const backButton = document.querySelector(".profile-settings-buttons");
-  if (backButton) {
-    backButton.style.display = "flex";
-  }
-
-  // Hide other sections
-  document.getElementById("loginSection").style.display = "none";
-  document.getElementById("signupSection").style.display = "none";
-  document.getElementById("dashboardContent").style.display = "none";
-
-  // Show profile settings section
-  document.getElementById("profileSettingsSection").style.display = "block";
-
-  // Set current page state
-  await setCurrentSession({
-    ...getCurrentSession(),
-    currentPage: "profile-settings",
-  });
-
-  // Load current user data into form
-  loadProfileData();
+  // Redirect to profile page
+  window.location.href = "profile.html";
 }
 
 // Load current user data into profile settings form
@@ -995,7 +976,7 @@ async function cancelProfileSettings() {
     ...getCurrentSession(),
     currentPage: "dashboard",
   });
-  showDashboard();
+  window.location.href = "dashboard.html";
 }
 
 // Show delete account confirmation modal
@@ -1968,18 +1949,8 @@ async function logout() {
   // Clear user data from storage
   await clearCurrentSession();
 
-  // Hide dashboard and show login
-  document.getElementById("loginSection").style.display = "block";
-  document.getElementById("dashboardContent").style.display = "none";
-  document.getElementById("signupSection").style.display = "none";
-  document.getElementById("profileSettingsSection").style.display = "none";
-
-  // Update header profile visibility
-  updateHeaderProfile();
-
-  // Hide profile dropdown
-  const dropdown = document.querySelector(".dropdown");
-  if (dropdown) dropdown.style.display = "none";
+  // Redirect to login page
+  window.location.href = "login.html";
 }
 
 // Update header profile visibility and info
@@ -2643,11 +2614,6 @@ async function handleSignup() {
 async function showLogin() {
   // Clear all error messages and input values when switching to login page
   clearAllErrorsAndInputs();
-  
-  document.getElementById("loginSection").style.display = "block";
-  document.getElementById("signupSection").style.display = "none";
-  document.getElementById("profileSettingsSection").style.display = "none";
-  document.getElementById("dashboardContent").style.display = "none";
 
   // Update session if user is logged in, otherwise don't create a session
   const currentSession = getCurrentSession();
@@ -2657,16 +2623,14 @@ async function showLogin() {
       currentPage: "login",
     });
   }
+
+  // Redirect to login page
+  window.location.href = "login.html";
 }
 
 async function showSignup() {
   // Clear all error messages and input values when switching to signup page
   clearAllErrorsAndInputs();
-  
-  document.getElementById("loginSection").style.display = "none";
-  document.getElementById("signupSection").style.display = "block";
-  document.getElementById("profileSettingsSection").style.display = "none";
-  document.getElementById("dashboardContent").style.display = "none";
 
   // Update session if user is logged in, otherwise don't create a session
   const currentSession = getCurrentSession();
@@ -2676,14 +2640,12 @@ async function showSignup() {
       currentPage: "signup",
     });
   }
+
+  // Redirect to signup page
+  window.location.href = "signup.html";
 }
 
 async function showDashboard(username) {
-  document.getElementById("loginSection").style.display = "none";
-  document.getElementById("signupSection").style.display = "none";
-  document.getElementById("profileSettingsSection").style.display = "none";
-  document.getElementById("dashboardContent").style.display = "block";
-
   // Update current session with dashboard page
   const currentSession = getCurrentSession();
   if (currentSession) {
@@ -2693,13 +2655,8 @@ async function showDashboard(username) {
     });
   }
 
-  // Load user portfolio data
-  loadUserPortfolio(username);
-
-  // Initialize chart after dashboard is shown
-  setTimeout(() => {
-    drawChart();
-  }, 100);
+  // Redirect to dashboard page
+  window.location.href = "dashboard.html";
 }
 
 function clearLoginFields() {
