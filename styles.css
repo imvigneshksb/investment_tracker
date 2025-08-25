@@ -937,7 +937,6 @@ section {
   background-color: var(--input-bg) !important;
   outline: none;
 }
-
 /* Complete autocomplete override - more aggressive approach */
 .input-field:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
@@ -1320,8 +1319,7 @@ input.input-field {
   font-size: var(--font-xl);
   font-weight: var(--weight-medium);
   cursor: pointer;
-  transition: border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
+  transition: all var(--transition-fast);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2233,11 +2231,33 @@ body.modal-open {
   justify-content: center;
   border-radius: 50%;
   transition: all var(--transition-fast);
+  /* Make it focusable for keyboard navigation */
+  outline: none;
 }
 
 .modal-header .close:hover {
-  background: var(--bg-color);
-  color: var(--text-color);
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-1px);
+}
+
+.modal-header .close:focus,
+.modal-header .close:focus-visible {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+  box-shadow: var(--focus-shadow);
+}
+
+.modal-header .close:active {
+  background-color: var(--button-hover);
+  color: var(--button-text);
+  box-shadow: var(--shadow-inset);
+  transform: translateY(1px);
+  transition: background-color 0.1s ease, box-shadow 0.1s ease,
+    transform 0.1s ease;
 }
 
 .modal-body {
@@ -2306,6 +2326,7 @@ body.modal-open {
   background-position: right 20px center;
   background-size: 16px;
   padding-right: 50px;
+  outline: none;
 }
 
 .form-select option[value=""] {

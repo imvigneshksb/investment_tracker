@@ -986,7 +986,7 @@ function confirmDeleteAccount() {
     <div class="modal-content" role="dialog" aria-labelledby="deleteModalTitle" aria-modal="true">
       <div class="modal-header">
         <h3 id="deleteModalTitle">Delete Account</h3>
-        <span class="close" onclick="hideDeleteAccountModal()" aria-label="Close modal">&times;</span>
+        <span class="close" onclick="hideDeleteAccountModal()" aria-label="Close modal" tabindex="0" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); hideDeleteAccountModal(); }">&times;</span>
       </div>
       <div class="modal-body">
         <div class="delete-confirmation-content">
@@ -3279,7 +3279,7 @@ function showAddStockModal() {
     <div class="modal-content" role="dialog" aria-labelledby="stockModalTitle" aria-modal="true">
       <div class="modal-header">
         <h3 id="stockModalTitle">Add Stock</h3>
-        <span class="close" onclick="hideAddStockModal()" aria-label="Close modal">&times;</span>
+        <span class="close" onclick="hideAddStockModal()" aria-label="Close modal" tabindex="0" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); hideAddStockModal(); }">&times;</span>
       </div>
       <div class="modal-body">
         <form id="stockForm" onsubmit="addStock(event)" novalidate>
@@ -3521,7 +3521,7 @@ function showAddMutualFundModal() {
     <div class="modal-content" role="dialog" aria-labelledby="mutualFundModalTitle" aria-modal="true">
       <div class="modal-header">
         <h3 id="mutualFundModalTitle">Add Mutual Fund</h3>
-        <span class="close" onclick="hideAddMutualFundModal()" aria-label="Close modal">&times;</span>
+        <span class="close" onclick="hideAddMutualFundModal()" aria-label="Close modal" tabindex="0" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); hideAddMutualFundModal(); }">&times;</span>
       </div>
       <div class="modal-body">
         <form id="mutualFundForm" onsubmit="addMutualFund(event)" novalidate>
