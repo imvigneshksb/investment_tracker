@@ -30,10 +30,6 @@ function resetButtonState(button) {
       btnElement.classList.contains("signup-btn") ||
       btnElement.classList.contains("update-btn")
     ) {
-      btnElement.style.backgroundColor = "";
-      btnElement.style.color = "";
-      btnElement.style.border = "";
-
       // Remove and re-add classes to force CSS re-evaluation
       setTimeout(() => {
         const classes = btnElement.className;
@@ -2419,8 +2415,8 @@ function showNotification(message, type = "info") {
 
   // Animate in
   setTimeout(() => {
-    notification.style.opacity = "1";
-    notification.style.transform = "translateX(0)";
+  notification.style.opacity = "1";
+  notification.style.transform = "translateX(0)";
   }, 10);
 
   // Remove after 3 seconds
@@ -2594,7 +2590,6 @@ async function handleLogin() {
       currentUser = result.user;
       console.log("✅ Login successful for user:", currentUser.email);
       updateHeaderProfile(); // Update header immediately after login
-      showNotification("Login successful! Welcome back.", "success");
 
       // Redirect to dashboard
       window.location.href = "dashboard.html";
@@ -3003,54 +2998,6 @@ window.addEventListener("resize", function () {
   setTimeout(() => drawChart(), 100);
 });
 
-// Add smooth scrolling for better UX
-document.querySelectorAll("button").forEach((button) => {
-  button.addEventListener("click", function (e) {
-    // Add ripple effect
-    const ripple = document.createElement("span");
-    const rect = this.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const x = e.clientX - rect.left - size / 2;
-    const y = e.clientY - rect.top - size / 2;
-
-    ripple.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            left: ${x}px;
-            top: ${y}px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: ripple 0.6s ease-out;
-        `;
-
-    this.style.position = "relative";
-    this.style.overflow = "hidden";
-    this.appendChild(ripple);
-
-    setTimeout(() => {
-      ripple.remove();
-    }, 600);
-  });
-});
-
-// Add CSS for ripple animation
-const style = document.createElement("style");
-style.textContent = `
-    @keyframes ripple {
-        0% {
-            transform: scale(0);
-            opacity: 1;
-        }
-        100% {
-            transform: scale(2);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
-
 // Notification System
 function showNotification(message, type = "success", duration = 4000) {
   const container = document.getElementById("notificationContainer");
@@ -3093,7 +3040,7 @@ function showNotification(message, type = "success", duration = 4000) {
 
   // Show notification with animation
   setTimeout(() => {
-    notification.classList.add("show");
+  notification.classList.add("show");
   }, 100);
 
   // Auto-hide after duration
@@ -3109,12 +3056,10 @@ function hideNotification(notification) {
 
   notification.classList.remove("show");
 
-  // Remove from DOM after animation
-  setTimeout(() => {
-    if (notification.parentElement) {
-      notification.parentElement.removeChild(notification);
-    }
-  }, 300);
+  // Remove from DOM immediately
+  if (notification.parentElement) {
+    notification.parentElement.removeChild(notification);
+  }
 }
 
 function showSuccessNotification(message) {
