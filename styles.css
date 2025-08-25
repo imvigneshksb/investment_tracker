@@ -171,7 +171,6 @@
 /* Primary Button Active State */
 .btn-primary:active {
   background-color: var(--button-hover);
-  box-shadow: var(--shadow-inset);
   transform: translateY(1px);
   transition: background-color 0.1s ease, box-shadow 0.1s ease,
     transform 0.1s ease;
